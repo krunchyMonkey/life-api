@@ -10,7 +10,20 @@ namespace Life.Infrastructure.Config
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, string connStr)
         {
-            services.AddDbContext<LifeDbContext>(o => o.UseSqlServer(connStr));
+            return AddInfrastructure(services, connStr, useInMemoryDatabase: false);
+        }
+        
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, string connStr, bool useInMemoryDatabase)
+        {
+            if (useInMemoryDatabase)
+            {
+                services.AddDbContext<LifeDbContext>(o => o.UseInMemoryDatabase(connStr));
+            }
+            else
+            {
+                services.AddDbContext<LifeDbContext>(o => o.UseSqlServer(connStr));
+            }
+            
             services.AddScoped<IBoardRepository, BoardRepository>();
             services.AddScoped<DatabaseSeeder>();
             // services.AddScoped<IBoardStoreRepository, BoardStoreRepository>(); // TODO: Implement when needed

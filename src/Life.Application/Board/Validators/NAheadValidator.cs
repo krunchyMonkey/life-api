@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using Life.Application.Board.Contracts;
+using Life.Application.Board.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace Life.Application.Board.Validators
 {
-    public sealed class NAheadValidator : AbstractValidator<NAheadRequest>
+    public sealed class NAheadValidator : AbstractValidator<NAhead>
     {
         public NAheadValidator()
         {
-            RuleFor(x => x.BoardId).NotEmpty();
-            RuleFor(x => x.N).GreaterThanOrEqualTo(0);
+            RuleFor(x => x.Request.BoardId).NotEmpty().WithMessage("Board ID is required");
+            RuleFor(x => x.Request.N).GreaterThan(0).WithMessage("Number of generations must be greater than 0");
         }
     }
 }

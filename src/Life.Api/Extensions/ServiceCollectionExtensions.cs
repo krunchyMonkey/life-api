@@ -59,9 +59,13 @@ public static class ServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
-        var infrastructureSettings = configuration.GetConnectionString("DefaultConnection") ?? "Server=(localdb)\\mssqllocaldb;Database=LifeDb;Trusted_Connection=true;MultipleActiveResultSets=true";
+        var connectionString = configuration.GetConnectionString("DefaultConnection") ?? "Server=(localdb)\\mssqllocaldb;Database=LifeDb;Trusted_Connection=true;MultipleActiveResultSets=true";
 
-        services.AddInfrastructure(infrastructureSettings);
+        // Use InMemory database for Testing environment
+        var environment = configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT") ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        bool useInMemory = environment == "Testing";
+
+        services.AddInfrastructure(connectionString, useInMemory);
         
         return services;
     }

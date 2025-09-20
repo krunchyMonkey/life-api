@@ -11,7 +11,13 @@ var app = builder.Build();
 // Configure the HTTP request pipeline
 app.ConfigureApplication();
 
-// Run database migrations and seeding
-await app.SeedDatabaseAsync();
+// Run database migrations and seeding (skip in test environment)
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    await app.SeedDatabaseAsync();
+}
 
 app.Run();
+
+// Make Program class accessible for integration tests
+public partial class Program { }

@@ -29,7 +29,8 @@ namespace Life.Domain.Algorithms
                 if ((DateTime.UtcNow - startAt) > maxTime) throw new TimeoutException();
                 cur = nxt;
             }
-            throw new InvalidOperationException();
+            // Reached maximum iterations without finding a final state
+            throw new TimeoutException($"Could not determine final state within {maxIterations} iterations");
         }
 
         private static bool Equal(Board a, Board b)
