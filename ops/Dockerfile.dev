@@ -1,0 +1,20 @@
+# Development Dockerfile with hot reload
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS dev
+WORKDIR /src
+
+# Install dotnet watch for hot reload
+RUN dotnet tool install --global dotnet-watch
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+# Copy project file and restore
+COPY ["src/Life.Api/Life.Api.csproj", "Life.Api/"]
+RUN dotnet restore "./Life.Api/Life.Api.csproj"
+
+# Copy source code
+COPY ["src/Life.Api/", "Life.Api/"]
+WORKDIR "/src/Life.Api"
+
+EXPOSE 8080
+
+# Use dotnet watch for hot reload in development
+CMD ["dotnet", "watch", "run", "--urls", "http://0.0.0.0:8080", "--non-interactive"]

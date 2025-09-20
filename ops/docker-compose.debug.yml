@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  life-api-debug:
+    build:
+      context: ..
+      dockerfile: ops/Dockerfile.debug
+    ports:
+      - "8080:8080"
+      - "5000:5000"  # Debug port
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+    volumes:
+      - ../src/Life.Api:/app/src  # Mount source for hot reload
+    stdin_open: true
+    tty: true

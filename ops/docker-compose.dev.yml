@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  life-api-dev:
+    build:
+      context: ..
+      dockerfile: ops/Dockerfile.dev
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - Logging__LogLevel__Default=Debug
+      - Logging__LogLevel__Microsoft.AspNetCore=Information
+    volumes:
+      - ../src/Life.Api:/src/Life.Api  # Hot reload support
+    stdin_open: true
+    tty: true

@@ -1,0 +1,24 @@
+# Debug Dockerfile with remote debugging support
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS debug
+WORKDIR /src
+
+# Install debugger first
+RUN apt-get update && apt-get install -y --no-install-recommends unzip \
+    && curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg
+
+# Copy project file and restore
+COPY ["src/Life.Api/Life.Api.csproj", "Life.Api/"]
+RUN dotnet restore "./Life.Api/Life.Api.csproj"
+
+# Copy source code
+COPY ["src/Life.Api/", "Life.Api/"]
+WORKDIR "/src/Life.Api"
+
+# Build in debug mode
+RUN dotnet build "./Life.Api.csproj" -c Debug
+
+EXPOSE 8080
+EXPOSE 5000
+
+# Start the application in debug mode
+ENTRYPOINT ["dotnet", "run", "--urls", "http://0.0.0.0:8080"]
