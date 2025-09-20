@@ -11,9 +11,19 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+
+# Copy all project files first for dependency resolution
 COPY ["src/Life.Api/Life.Api.csproj", "Life.Api/"]
+COPY ["src/Life.Application/Life.Application.csproj", "Life.Application/"]
+COPY ["src/Life.Domain/Life.Domain.csproj", "Life.Domain/"]
+COPY ["src/Life.Infrastructure/Life.Infrastructure.csproj", "Life.Infrastructure/"]
+
+# Restore dependencies
 RUN dotnet restore "./Life.Api/Life.Api.csproj"
-COPY ["src/Life.Api/", "Life.Api/"]
+
+# Copy all source code
+COPY ["src/", "."]
+
 WORKDIR "/src/Life.Api"
 RUN dotnet build "./Life.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
