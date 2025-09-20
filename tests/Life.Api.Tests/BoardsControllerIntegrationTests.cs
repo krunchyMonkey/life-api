@@ -9,12 +9,20 @@ using Life.Infrastructure.Data;
 
 namespace Life.Api.Tests;
 
+/// <summary>
+/// Integration tests for the BoardsController API endpoints.
+/// These tests verify all API endpoints work correctly with proper data management,
+/// validation, error handling, and automatic cleanup.
+/// </summary>
 [TestFixture]
 public class BoardsControllerIntegrationTests
 {
     private LifeApiTestFactory _factory = null!;
     private HttpClient _client = null!;
 
+    /// <summary>
+    /// Set up test environment with fresh API factory and HTTP client for each test
+    /// </summary>
     [SetUp]
     public void SetUp()
     {
@@ -22,6 +30,9 @@ public class BoardsControllerIntegrationTests
         _client = _factory.CreateClient();
     }
 
+    /// <summary>
+    /// Clean up resources after each test
+    /// </summary>
     [TearDown]
     public async Task TearDown()
     {
@@ -30,6 +41,11 @@ public class BoardsControllerIntegrationTests
         await _factory.DisposeAsync();
     }
 
+    #region Upload Board Tests
+
+    /// <summary>
+    /// Test that uploading a valid Game of Life board returns a board ID and stores the data correctly
+    /// </summary>
     [Test]
     public async Task Upload_ValidBoard_ReturnsCreatedBoardId()
     {
@@ -57,6 +73,9 @@ public class BoardsControllerIntegrationTests
         await VerifyBoardExistsInDatabase(boardId, uploadRequest.Width, uploadRequest.Height);
     }
 
+    /// <summary>
+    /// Test that uploading an invalid board (negative dimensions) returns BadRequest
+    /// </summary>
     [Test]
     public async Task Upload_InvalidBoard_ReturnsBadRequest()
     {
@@ -77,6 +96,13 @@ public class BoardsControllerIntegrationTests
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
     }
 
+    #endregion
+
+    #region Next Generation Tests
+
+    /// <summary>
+    /// Test that requesting the next generation of a valid board returns the evolved state
+    /// </summary>
     [Test]
     public async Task Next_ValidBoardId_ReturnsNextGeneration()
     {
@@ -125,6 +151,13 @@ public class BoardsControllerIntegrationTests
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
     }
 
+    #endregion
+
+    #region N-Ahead Generation Tests
+
+    /// <summary>
+    /// Test that requesting N generations ahead returns the correct evolved state
+    /// </summary>
     [Test]
     public async Task NAhead_ValidBoardIdAndGenerations_ReturnsCorrectGeneration()
     {
@@ -155,6 +188,9 @@ public class BoardsControllerIntegrationTests
         await VerifySnapshotExistsInDatabase(boardId, generation: 3);
     }
 
+    /// <summary>
+    /// Test that requesting zero generations ahead returns BadRequest due to validation
+    /// </summary>
     [Test]
     public async Task NAhead_ZeroGenerations_ReturnsBadRequest()
     {
@@ -172,6 +208,13 @@ public class BoardsControllerIntegrationTests
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
     }
 
+    #endregion
+
+    #region Final State Tests
+
+    /// <summary>
+    /// Test that requesting the final state of a board returns the stable or cyclic result
+    /// </summary>
     [Test]
     public async Task Final_ValidBoardId_ReturnsFinalState()
     {
@@ -200,6 +243,9 @@ public class BoardsControllerIntegrationTests
         Assert.That(finalDto.Stable || finalDto.Cyclic, Is.True, "Board should reach either stable or cyclic state");
     }
 
+    /// <summary>
+    /// Test that requesting the final state for a non-existent board returns NotFound
+    /// </summary>
     [Test]
     public async Task Final_NonExistentBoardId_ReturnsNotFound()
     {
@@ -217,6 +263,13 @@ public class BoardsControllerIntegrationTests
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
     }
 
+    #endregion
+
+    #region Integration and Data Isolation Tests
+
+    /// <summary>
+    /// Test that multiple concurrent requests with different boards maintain proper data isolation
+    /// </summary>
     [Test]
     public async Task MultipleRequests_WithSameBoard_ShouldIsolateData()
     {
@@ -239,8 +292,15 @@ public class BoardsControllerIntegrationTests
         await VerifySnapshotExistsInDatabase(boardId2, generation: 1);
     }
 
-    #region Helper Methods
+    #endregion
 
+    #region Test Helper Methods
+
+    /// <summary>
+    /// Creates a test board with a default or custom Game of Life pattern
+    /// </summary>
+    /// <param name="pattern">Optional custom pattern of alive cells. Uses default diagonal pattern if null.</param>
+    /// <returns>The ID of the created board</returns>
     private async Task<string> CreateTestBoard(int[][]? pattern = null)
     {
         pattern ??= new[] { new[] { 1, 1 }, new[] { 2, 2 }, new[] { 3, 3 } };
@@ -260,6 +320,11 @@ public class BoardsControllerIntegrationTests
         return await response.Content.ReadAsStringAsync();
     }
 
+    /// <summary>
+    /// Helper method to process the next generation for a given board ID
+    /// </summary>
+    /// <param name="boardId">The board ID to process</param>
+    /// <returns>The HTTP status code of the response</returns>
     private async Task<HttpStatusCode> ProcessNextGeneration(string boardId)
     {
         var nextRequest = new NextRequest(boardId);
@@ -270,6 +335,9 @@ public class BoardsControllerIntegrationTests
         return response.StatusCode;
     }
 
+    /// <summary>
+    /// Verifies that a board exists in the database with the expected dimensions
+    /// </summary>
     private async Task VerifyBoardExistsInDatabase(string boardId, int expectedWidth, int expectedHeight)
     {
         using var scope = _factory.Services.CreateScope();
@@ -281,6 +349,9 @@ public class BoardsControllerIntegrationTests
         Assert.That(board.Height, Is.EqualTo(expectedHeight));
     }
 
+    /// <summary>
+    /// Verifies that a snapshot exists in the database for a specific board and generation
+    /// </summary>
     private async Task VerifySnapshotExistsInDatabase(string boardId, long generation)
     {
         using var scope = _factory.Services.CreateScope();
