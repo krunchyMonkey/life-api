@@ -25,7 +25,15 @@ public static class ServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddDocumentationServices(this IServiceCollection services)
     {
-        services.AddOpenApi();
+        services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo 
+            { 
+                Title = "Life API", 
+                Version = "v1",
+                Description = "Conway's Game of Life API"
+            });
+        });
         
         return services;
     }

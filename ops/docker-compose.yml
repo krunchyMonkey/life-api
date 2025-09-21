@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -14,7 +13,7 @@ services:
     networks:
       - life-api-network
     healthcheck:
-      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "LifeApi123!" -Q "SELECT 1" || exit 1
+      test: /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "LifeApi123!" -Q "SELECT 1" || exit 1
       interval: 10s
       timeout: 3s
       retries: 10

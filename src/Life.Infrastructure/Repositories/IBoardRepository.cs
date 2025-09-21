@@ -1,9 +1,4 @@
-﻿using Life.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Life.Domain.Aggregates;
 
 namespace Life.Infrastructure.Repositories
 {

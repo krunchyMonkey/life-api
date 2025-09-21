@@ -1,11 +1,6 @@
 ﻿using FluentAssertions;
-using Life.Domain.Algorithms;
-using Life.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Life.Domain.Aggregates;
+using Life.Domain.Services;
 
 namespace Life.Domain.Tests
 {

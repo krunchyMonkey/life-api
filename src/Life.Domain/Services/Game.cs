@@ -1,48 +1,43 @@
-﻿using Life.Domain.Abstractrions;
-using Life.Domain.Models;
-using Life.Domain.Results;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Life.Domain.Aggregates;
+using Life.Domain.ValueObjects;
 
 namespace Life.Domain.Services
 {
+    /// <summary>
+    /// Legacy Game service that maintains backward compatibility while delegating to DDD services
+    /// </summary>
     public sealed class Game : IGame
     {
-        private static readonly (int dx, int dy)[] N = { (-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1) };
+        private readonly IGameSimulationService _simulationService;
+        private readonly IFinalStateDetectionService _finalStateService;
 
-        public Board Next(Board b)
+        public Game()
         {
-            var alive = new List<(int x, int y)>();
-            for (int y = 0; y < b.Height; y++)
-                for (int x = 0; x < b.Width; x++)
-                {
-                    int n = 0;
-                    for (int i = 0; i < N.Length; i++)
-                    {
-                        int nx = x + N[i].dx;
-                        int ny = y + N[i].dy;
-                        if (nx >= 0 && ny >= 0 && nx < b.Width && ny < b.Height && b.Get(nx, ny)) n++;
-                    }
-                    bool nextAlive = (b.Get(x, y) && (n == 2 || n == 3)) || (!b.Get(x, y) && n == 3);
-                    if (nextAlive) alive.Add((x, y));
-                }
-            return new Board(b.Width, b.Height, alive);
+            // Create dependencies internally for backward compatibility
+            _simulationService = new GameSimulationService();
+            var boardHasher = new BoardHasher();
+            _finalStateService = new FinalStateDetectionService(_simulationService, boardHasher);
         }
 
-        public Board Advance(Board b, long n)
+        public Game(IGameSimulationService simulationService, IFinalStateDetectionService finalStateService)
         {
-            var cur = b;
-            for (long i = 0; i < n; i++) cur = Next(cur);
-            return cur;
+            _simulationService = simulationService ?? throw new ArgumentNullException(nameof(simulationService));
+            _finalStateService = finalStateService ?? throw new ArgumentNullException(nameof(finalStateService));
+        }
+
+        public Board Next(Board board)
+        {
+            return _simulationService.ComputeNextGeneration(board);
+        }
+
+        public Board Advance(Board board, long generations)
+        {
+            return _simulationService.AdvanceGenerations(board, generations);
         }
 
         public FinalResult Final(Board start, int maxIterations, TimeSpan maxTime)
         {
-            var detector = new Algorithms.FinalDetector(new Algorithms.BoardHasher());
-            return detector.Detect(start, Next, maxIterations, maxTime);
+            return _finalStateService.DetectFinalState(start, maxIterations, maxTime);
         }
     }
 }

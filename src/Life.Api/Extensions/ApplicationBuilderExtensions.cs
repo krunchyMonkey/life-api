@@ -22,7 +22,11 @@ public static class ApplicationBuilderExtensions
     {
         if (app.Environment.IsDevelopment())
         {
-            app.MapOpenApi();
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Life API v1");
+            });
         }
         
         return app;
