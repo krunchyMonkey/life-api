@@ -24,7 +24,7 @@ POST {{Life.Api_HostAddress}}/api/v1/boards/next
 Content-Type: application/json
 
 {
-  "BoardId": "dcf94d0cf8d0450fb829cac7573a230b"
+  "BoardId": "73fb84958c534d429362f03e23e1072c"
 }
 
 ### Alternative: Upload a Block Pattern (stable - doesn't change)

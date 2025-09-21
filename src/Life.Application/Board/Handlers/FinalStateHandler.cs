@@ -1,32 +1,36 @@
 ﻿using Life.Application.Board.Commands;
 using Life.Application.Board.Contracts;
-using Life.Domain.Services;
 using Life.Infrastructure.Repositories;
 using MediatR;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Life.Application.Board.Handlers
 {
     public sealed class FinalStateHandler : IRequestHandler<FinalState, FinalDto>
     {
-        private readonly IBoardRepository _boardRespository;
-        private readonly Game _game;
-        private readonly IConfiguration _cfg;
-        public FinalStateHandler(IBoardRepository boardRespository, Game game, IConfiguration cfg) { _boardRespository = boardRespository; _game = game; _cfg = cfg; }
+        private readonly IBoardRepository _boardRepository;
+        private readonly IConfiguration _configuration;
+        
+        public FinalStateHandler(IBoardRepository boardRepository, IConfiguration configuration) 
+        { 
+            _boardRepository = boardRepository; 
+            _configuration = configuration; 
+        }
+        
         public async Task<FinalDto> Handle(FinalState request, CancellationToken ct)
         {
-            var b = await _boardRespository.GetAsync(request.Request.BoardId, ct);
-            if (b is null) throw new KeyNotFoundException();
-            var maxI = _cfg.GetValue<int>("Final:MaxIterations");
-            var maxMs = _cfg.GetValue<int>("Final:MaxMillis");
-            var r = _game.Final(b, maxI, TimeSpan.FromMilliseconds(maxMs));
-            await _boardRespository.SaveSnapshotAsync(request.Request.BoardId, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), r.Board, ct);
-            return new FinalDto(r.Board.ToDto(), r.Stable, r.Cyclic, r.Iterations, r.CycleLength);
+            var board = await _boardRepository.GetAsync(request.Request.BoardId, ct);
+            if (board is null) 
+                throw new KeyNotFoundException($"Board with ID '{request.Request.BoardId}' was not found.");
+            
+            var maxIterations = _configuration.GetValue<int>("Final:MaxIterations");
+            var maxMs = _configuration.GetValue<int>("Final:MaxMillis");
+            
+            // ✅ CORRECT: Application layer only talks to Aggregates
+            var result = board.DetectFinalState(maxIterations, TimeSpan.FromMilliseconds(maxMs));
+            await _boardRepository.SaveSnapshotAsync(request.Request.BoardId, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), result.Board, ct);
+            
+            return new FinalDto(result.Board.ToDto(), result.Stable, result.Cyclic, result.Iterations, result.CycleLength);
         }
     }
 }

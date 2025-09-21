@@ -24,9 +24,10 @@ namespace Life.Infrastructure.Config
                 services.AddDbContext<LifeDbContext>(o => o.UseSqlServer(connStr));
             }
             
+            // Infrastructure services only
             services.AddScoped<IBoardRepository, BoardRepository>();
             services.AddScoped<DatabaseSeeder>();
-            // services.AddScoped<IBoardStoreRepository, BoardStoreRepository>(); // TODO: Implement when needed
+            
             return services;
         }
     }

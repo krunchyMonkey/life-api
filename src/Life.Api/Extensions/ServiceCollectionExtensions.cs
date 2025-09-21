@@ -53,17 +53,8 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Adds domain services
-    /// </summary>
-    public static IServiceCollection AddDomainServices(this IServiceCollection services)
-    {
-        services.AddSingleton<Life.Domain.Services.Game>();
-        
-        return services;
-    }
-
-    /// <summary>
     /// Adds infrastructure services with configuration
+    /// Domain services are now registered in the Infrastructure layer
     /// </summary>
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
@@ -86,7 +77,6 @@ public static class ServiceCollectionExtensions
         services.AddApiServices()
                 .AddDocumentationServices()
                 .AddMediatRServices()
-                .AddDomainServices()
                 .AddInfrastructureServices(configuration);
                 
         return services;

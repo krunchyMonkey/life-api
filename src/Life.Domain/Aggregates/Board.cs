@@ -1,11 +1,14 @@
 using System.Collections;
 using Life.Domain.Common;
 using Life.Domain.ValueObjects;
+using Life.Domain.Events;
+using Life.Domain.Services;
 
 namespace Life.Domain.Aggregates
 {
     /// <summary>
-    /// Represents a Game of Life board - the main aggregate root
+    /// Represents a Game of Life board - a simplified traditional DDD aggregate root
+    /// Core state management with business logic delegated to static domain services
     /// </summary>
     public sealed class Board : AggregateRoot<Guid>
     {
@@ -15,40 +18,61 @@ namespace Life.Domain.Aggregates
         
         private readonly BitArray _bits;
 
+        // Simplified constructors with specification-based validation
         public Board(int width, int height, IEnumerable<(int x, int y)> alive) : base(Guid.NewGuid())
         {
-            var dimensions = new BoardDimensions(width, height);
-            if (!dimensions.IsValid) 
-                throw new ArgumentOutOfRangeException(nameof(dimensions), "Board dimensions must be positive");
+            // Delegate validation to static domain service using specifications
+            BoardValidationService.ValidateConstruction(width, height, alive);
             
-            Dimensions = dimensions;
-            _bits = new BitArray(dimensions.TotalCells);
+            Dimensions = new BoardDimensions(width, height);
+            _bits = new BitArray(Dimensions.TotalCells);
             
-            foreach (var c in alive)
-            {
-                var position = new Position(c.x, c.y);
-                if (!dimensions.Contains(position)) 
-                    throw new ArgumentOutOfRangeException(nameof(alive), $"Position {position} is outside board bounds");
-                _bits[c.y * width + c.x] = true;
-            }
+            InitializeCells(alive.Select(c => new Position(c.x, c.y)));
         }
 
         public Board(BoardDimensions dimensions, IEnumerable<Position> alivePositions) : base(Guid.NewGuid())
         {
-            if (!dimensions.IsValid) 
-                throw new ArgumentOutOfRangeException(nameof(dimensions), "Board dimensions must be positive");
+            // Delegate validation to static domain service using specifications
+            dimensions.ValidateDimensions();
+            dimensions.ValidatePositions(alivePositions);
             
             Dimensions = dimensions;
             _bits = new BitArray(dimensions.TotalCells);
             
+            InitializeCells(alivePositions);
+        }
+
+        // Private constructor for internal board creation
+        private Board(BoardDimensions dimensions, BitArray bits, Guid id) : base(id)
+        {
+            Dimensions = dimensions;
+            _bits = new BitArray(bits);
+        }
+
+        #region State Management
+        
+        private void InitializeCells(IEnumerable<Position> alivePositions)
+        {
             foreach (var position in alivePositions)
             {
-                if (!dimensions.Contains(position)) 
-                    throw new ArgumentOutOfRangeException(nameof(alivePositions), $"Position {position} is outside board bounds");
-                _bits[position.Y * dimensions.Width + position.X] = true;
+                _bits[position.Y * Width + position.X] = true;
             }
         }
 
+        private BitArray CreateBitsFromPositions(IEnumerable<Position> alivePositions)
+        {
+            var bits = new BitArray(Dimensions.TotalCells);
+            foreach (var position in alivePositions)
+            {
+                bits[position.Y * Width + position.X] = true;
+            }
+            return bits;
+        }
+
+        #endregion
+
+        #region Core Query Methods
+        
         /// <summary>
         /// Gets whether a cell at the specified position is alive
         /// </summary>
@@ -86,67 +110,76 @@ namespace Life.Domain.Aggregates
             return Alive().Select(c => new Position(c.x, c.y));
         }
 
-        /// <summary>
-        /// Counts the number of live neighbors around a position
-        /// </summary>
-        public int CountLiveNeighbors(Position position)
-        {
-            return position.GetNeighbors()
-                .Where(neighbor => Dimensions.Contains(neighbor))
-                .Count(neighbor => Get(neighbor));
-        }
+        #endregion
 
+        #region Business Methods (Delegating to Static Services)
+        
         /// <summary>
-        /// Determines if a cell should be alive in the next generation based on Conway's rules
-        /// </summary>
-        public bool ShouldCellBeAlive(Position position)
-        {
-            var isCurrentlyAlive = Get(position);
-            var liveNeighbors = CountLiveNeighbors(position);
-
-            // Conway's Game of Life rules:
-            // 1. Any live cell with fewer than two live neighbors dies (underpopulation)
-            // 2. Any live cell with two or three live neighbors lives on to the next generation
-            // 3. Any live cell with more than three live neighbors dies (overpopulation)
-            // 4. Any dead cell with exactly three live neighbors becomes a live cell (reproduction)
-            
-            return isCurrentlyAlive ? (liveNeighbors == 2 || liveNeighbors == 3) : (liveNeighbors == 3);
-        }
-
-        /// <summary>
-        /// Creates the next generation board according to Conway's Game of Life rules
+        /// Creates the next generation board - delegates to CellLifecycleService
         /// </summary>
         public Board NextGeneration()
         {
-            var aliveInNextGeneration = new List<Position>();
+            var nextBoard = this.GenerateNextGeneration();
             
-            for (int y = 0; y < Height; y++)
-            {
-                for (int x = 0; x < Width; x++)
-                {
-                    var position = new Position(x, y);
-                    if (ShouldCellBeAlive(position))
-                    {
-                        aliveInNextGeneration.Add(position);
-                    }
-                }
-            }
+            // Create new board with proper domain events
+            var result = CreateBoardFromPositions(nextBoard.AlivePositions(), Guid.NewGuid());
             
-            return new Board(Dimensions, aliveInNextGeneration);
+            // Raise domain event for generation advancement
+            AddDomainEvent(new BoardGenerationAdvanced(Id, result.Id));
+            
+            return result;
         }
 
         /// <summary>
-        /// Checks if this board is identical to another board
+        /// Advances multiple generations - delegates to BoardSimulationService
+        /// </summary>
+        public Board AdvanceGenerations(long count)
+        {
+            var finalBoard = this.AdvanceGenerations(count);
+            
+            // Create new board with proper domain events
+            var result = CreateBoardFromPositions(finalBoard.AlivePositions(), Guid.NewGuid());
+
+            // Raise domain event for multiple generation advancement
+            AddDomainEvent(new BoardMultipleGenerationsAdvanced(Id, result.Id, count));
+            
+            return result;
+        }
+
+        /// <summary>
+        /// Detects final states - delegates to BoardSimulationService
+        /// </summary>
+        public FinalResult DetectFinalState(int maxIterations, TimeSpan maxTime)
+        {
+            var result = this.DetectBoardFinalState(maxIterations, maxTime);
+
+            // Raise domain event for final state detection
+            AddDomainEvent(new BoardFinalStateDetected(Id, result.Board.Id, result.Cyclic, result.Stable, result.CycleLength));
+            
+            return result;
+        }
+
+        /// <summary>
+        /// Checks if this board is identical to another - delegates to BoardComparisonService
         /// </summary>
         public bool IsIdenticalTo(Board other)
         {
-            if (other is null) return false;
-            if (Dimensions != other.Dimensions) return false;
-            
-            var thisAlive = Alive().OrderBy(c => c.y).ThenBy(c => c.x).ToArray();
-            var otherAlive = other.Alive().OrderBy(c => c.y).ThenBy(c => c.x).ToArray();
-            
-            return thisAlive.SequenceEqual(otherAlive);
+            return this.IsBoardIdenticalTo(other);
         }
+
+        #endregion
+
+        #region Helper Methods
+        
+        /// <summary>
+        /// Creates a new board from alive positions with specified ID
+        /// </summary>
+        private Board CreateBoardFromPositions(IEnumerable<Position> alivePositions, Guid id)
+        {
+            var bits = CreateBitsFromPositions(alivePositions);
+            return new Board(Dimensions, bits, id);
+        }
+
+        #endregion
     }
 }
