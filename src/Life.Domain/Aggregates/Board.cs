@@ -151,7 +151,7 @@ namespace Life.Domain.Aggregates
         /// </summary>
         public FinalResult DetectFinalState(int maxIterations, TimeSpan maxTime)
         {
-            var result = this.DetectBoardFinalState(maxIterations, maxTime);
+            var result = BoardSimulationService.DetectFinalState(this, maxIterations, maxTime);
 
             // Raise domain event for final state detection
             AddDomainEvent(new BoardFinalStateDetected(Id, result.Board.Id, result.Cyclic, result.Stable, result.CycleLength));

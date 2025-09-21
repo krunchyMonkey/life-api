@@ -21,8 +21,4 @@
     <None Remove="Results\**" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Factories\" />
-  </ItemGroup>
-
 </Project>
