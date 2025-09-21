@@ -135,7 +135,7 @@ namespace Life.Domain.Aggregates
         /// </summary>
         public Board AdvanceGenerations(long count)
         {
-            var finalBoard = this.AdvanceGenerations(count);
+            var finalBoard = BoardSimulationService.AdvanceGenerations(this, count);
             
             // Create new board with proper domain events
             var result = CreateBoardFromPositions(finalBoard.AlivePositions(), Guid.NewGuid());
