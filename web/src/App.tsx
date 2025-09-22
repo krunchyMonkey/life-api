@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { GameBoard } from './components/GameBoard';
+import GameBoard from './components/GameBoard';
 import { GameControls } from './components/GameControls';
 import { PatternLibrary } from './components/PatternLibrary';
 import { useGameOfLife } from './hooks/useGameOfLife';

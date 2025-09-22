@@ -1,1 +1,2 @@
-export { default as GameBoard } from './GameBoard';
+import GameBoard from "./GameBoard";
+export default GameBoard;
