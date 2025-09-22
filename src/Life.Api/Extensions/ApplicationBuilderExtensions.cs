@@ -37,6 +37,7 @@ public static class ApplicationBuilderExtensions
     /// </summary>
     public static WebApplication ConfigureMiddleware(this WebApplication app)
     {
+        app.UseCors();
         app.UseHttpsRedirection();
         app.UseAuthorization();
         
