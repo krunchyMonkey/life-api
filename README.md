@@ -1,4 +1,3 @@
-
 # Conway's Game of Life - Enterprise API Architecture Showcase 🧬
 
 > **Senior Backend Developer Portfolio (10+ Years)**: This project primarily demonstrates **enterprise-grade .NET API architecture** with Domain Driven Design, Clean Architecture, and advanced backend engineering practices. The React frontend was built as a functional demonstration using AI assistance, with manual restructuring and optimization applying 10+ years of frontend best practices and component architecture expertise.
