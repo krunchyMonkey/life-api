@@ -1,10 +1,11 @@
 ﻿using Life.Application.Board.Commands;
+using Life.Application.Board.Contracts;
 using Life.Infrastructure.Repositories;
 using MediatR;
 
 namespace Life.Application.Board.Handlers
 {
-    public sealed class UploadBoardHandler : IRequestHandler<UploadBoard, string>
+    public sealed class UploadBoardHandler : IRequestHandler<UploadBoard, UploadResponse>
     {
         private readonly IBoardRepository _boardRepository;
 
@@ -13,10 +14,11 @@ namespace Life.Application.Board.Handlers
             _boardRepository = boardRepository;
         }
 
-        public Task<string> Handle(UploadBoard request, CancellationToken ct)
+        public async Task<UploadResponse> Handle(UploadBoard request, CancellationToken ct)
         {
             var board = request.Request.ToBoard();
-            return _boardRepository.CreateAsync(board, ct);
+            var boardId = await _boardRepository.CreateAsync(board, ct);
+            return new UploadResponse(boardId);
         }
     }
 }

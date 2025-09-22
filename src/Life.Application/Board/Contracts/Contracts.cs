@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace Life.Application.Board.Contracts
 {
     public sealed record UploadRequest(int Width, int Height, int[][] Alive);
+    public sealed record UploadResponse(string BoardId);
     public sealed record NextRequest(string BoardId);
     public sealed record NAheadRequest(string BoardId, long N);
     public sealed record FinalRequest(string BoardId);

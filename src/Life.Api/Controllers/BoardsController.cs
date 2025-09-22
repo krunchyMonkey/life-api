@@ -13,7 +13,7 @@ namespace Life.Api.Controllers
         public BoardsController(IMediator mediator) => _mediator = mediator;
 
         [HttpPost("upload")]
-        public Task<string> Upload([FromBody] UploadRequest request) => _mediator.Send(new UploadBoard(request));
+        public Task<UploadResponse> Upload([FromBody] UploadRequest request) => _mediator.Send(new UploadBoard(request));
 
         [HttpPost("next")]
         public Task<BoardDto> Next([FromBody] NextRequest request) => _mediator.Send(new NextState(request));

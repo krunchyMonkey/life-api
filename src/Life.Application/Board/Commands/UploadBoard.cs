@@ -8,5 +8,5 @@ using System.Threading.Tasks;
 
 namespace Life.Application.Board.Commands
 {
-    public sealed record UploadBoard(UploadRequest Request) : IRequest<string>;
+    public sealed record UploadBoard(UploadRequest Request) : IRequest<UploadResponse>;
 }

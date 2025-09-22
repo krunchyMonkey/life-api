@@ -20,11 +20,12 @@ Content-Type: application/json
 
 ### Step 2: Get next board generation (IMPORTANT: Copy the BoardId from Step 1 response)
 # Replace the BoardId below with the actual ID returned from the upload above
+# Note: The upload response now returns {"BoardId": "value"} instead of just "value"
 POST {{Life.Api_HostAddress}}/api/v1/boards/next
 Content-Type: application/json
 
 {
-  "BoardId": "73fb84958c534d429362f03e23e1072c"
+  "BoardId": "f13e2213352248998e3234618b346d8b"
 }
 
 ### Alternative: Upload a Block Pattern (stable - doesn't change)
@@ -48,7 +49,7 @@ POST {{Life.Api_HostAddress}}/api/v1/boards/n-ahead
 Content-Type: application/json
 
 {
-  "BoardId": "REPLACE_WITH_ACTUAL_BOARD_ID_FROM_UPLOAD",
+  "BoardId": "f13e2213352248998e3234618b346d8b",
   "N": 5
 }
 
@@ -57,7 +58,7 @@ POST {{Life.Api_HostAddress}}/api/v1/boards/final
 Content-Type: application/json
 
 {
-  "BoardId": "3511608efd1d48bc9f40153ae5550a9f"
+  "BoardId": "f13e2213352248998e3234618b346d8b"
 }
 
 ### DEBUG: Check if specific BoardId exists (if you have database access)
