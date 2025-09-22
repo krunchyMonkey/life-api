@@ -1,9 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Abstractrions\**" />
+    <Compile Remove="Algorithms\**" />
+    <Compile Remove="Models\**" />
+    <Compile Remove="Results\**" />
+    <EmbeddedResource Remove="Abstractrions\**" />
+    <EmbeddedResource Remove="Algorithms\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <EmbeddedResource Remove="Results\**" />
+    <None Remove="Abstractrions\**" />
+    <None Remove="Algorithms\**" />
+    <None Remove="Models\**" />
+    <None Remove="Results\**" />
+  </ItemGroup>
 
 </Project>

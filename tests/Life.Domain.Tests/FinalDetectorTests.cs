@@ -1,43 +1,51 @@
 ﻿using FluentAssertions;
-using Life.Domain.Algorithms;
-using Life.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Life.Domain.Aggregates;
 
 namespace Life.Domain.Tests
 {
     public class FinalDetectorTests
     {
         [Fact]
-        public void Detects_Stable()
+        public void DetectFinalState_Should_Detect_Stable_Pattern()
         {
-            // Arrange
-            var detector = new FinalDetector(new BoardHasher());
-            var start = new Board(4, 4, new[] { (1, 1), (1, 2), (2, 1), (2, 2) });
+            // Arrange - Block pattern (stable)
+            var stableBoard = new Board(4, 4, new[] { (1, 1), (1, 2), (2, 1), (2, 2) });
 
-            // Act
-            var res = detector.Detect(start, b => new Life.Domain.Services.Game().Next(b), 1000, TimeSpan.FromMilliseconds(200));
+            // Act - Use Board's DetectFinalState method directly
+            var result = stableBoard.DetectFinalState(10, TimeSpan.FromSeconds(1));
 
             // Assert
-            res.Stable.Should().BeTrue();
-            res.Cyclic.Should().BeFalse();
+            result.Should().NotBeNull();
+            result.Stable.Should().BeTrue();
+            result.Cyclic.Should().BeFalse();
+            result.Iterations.Should().Be(1);
         }
 
         [Fact]
-        public void Detects_Cycle()
+        public void DetectFinalState_Should_Detect_Oscillating_Pattern()
         {
-            // Arrange
-            var detector = new FinalDetector(new BoardHasher());
-            var start = new Board(5, 5, new[] { (2, 1), (2, 2), (2, 3) });
+            // Arrange - Blinker pattern (oscillates with period 2)
+            var blinkerBoard = new Board(5, 5, new[] { (2, 1), (2, 2), (2, 3) });
 
-            // Act
-            var res = detector.Detect(start, b => new Life.Domain.Services.Game().Next(b), 1000, TimeSpan.FromMilliseconds(200));
+            // Act - Use Board's DetectFinalState method directly
+            var result = blinkerBoard.DetectFinalState(10, TimeSpan.FromSeconds(1));
 
             // Assert
-            res.Cyclic.Should().BeTrue();
+            result.Should().NotBeNull();
+            result.Stable.Should().BeFalse();
+            result.Cyclic.Should().BeTrue();
+            result.CycleLength.Should().Be(2);
+        }
+
+        [Fact]
+        public void DetectFinalState_Should_Timeout_With_Max_Iterations()
+        {
+            // Arrange - Create a complex pattern that might not stabilize quickly
+            var complexBoard = new Board(10, 10, new[] { (1, 1), (2, 2), (3, 3), (4, 4), (5, 5) });
+
+            // Act & Assert - Should throw timeout exception with low iteration limit
+            var action = () => complexBoard.DetectFinalState(1, TimeSpan.FromSeconds(10));
+            action.Should().Throw<TimeoutException>();
         }
     }
 }

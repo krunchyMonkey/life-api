@@ -1,5 +1,24 @@
-version: '3.8'
 services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: life-api-sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=LifeApi123!
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - life-api-network
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "LifeApi123!" -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
   life-api:
     build:
       context: ..
@@ -12,3 +31,16 @@ services:
       - Logging__LogLevel__Default=Debug
       - Logging__LogLevel__Microsoft.AspNetCore=Information
       - Logging__LogLevel__Life.Api=Debug
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=LifeApiDb;User Id=sa;Password=LifeApi123!;TrustServerCertificate=true;MultipleActiveResultSets=true;
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    networks:
+      - life-api-network
+
+volumes:
+  sqlserver_data:
+
+networks:
+  life-api-network:
+    driver: bridge

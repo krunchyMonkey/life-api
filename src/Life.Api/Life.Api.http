@@ -1,6 +1,67 @@
-@Life.Api_HostAddress = http://localhost:5049
+@Life.Api_HostAddress = http://localhost:8080
 
-GET {{Life.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+# Example API calls for Life API
+# Update the host address above to match your running instance
 
-###
+### Step 1: Upload a board (Classic Blinker Pattern)
+# @name uploadBoard
+POST {{Life.Api_HostAddress}}/api/v1/boards/upload
+Content-Type: application/json
+
+{
+  "Width": 5,
+  "Height": 5,
+  "Alive": [
+    [2, 1],
+    [2, 2],
+    [2, 3]
+  ]
+}
+
+### Step 2: Get next board generation (IMPORTANT: Copy the BoardId from Step 1 response)
+# Replace the BoardId below with the actual ID returned from the upload above
+# Note: The upload response now returns {"BoardId": "value"} instead of just "value"
+POST {{Life.Api_HostAddress}}/api/v1/boards/next
+Content-Type: application/json
+
+{
+  "BoardId": "f13e2213352248998e3234618b346d8b"
+}
+
+### Alternative: Upload a Block Pattern (stable - doesn't change)
+# @name uploadBlock
+POST {{Life.Api_HostAddress}}/api/v1/boards/upload
+Content-Type: application/json
+
+{
+  "Width": 4,
+  "Height": 4,
+  "Alive": [
+    [1, 1],
+    [1, 2],
+    [2, 1],
+    [2, 2]
+  ]
+}
+
+### Get N generations ahead
+POST {{Life.Api_HostAddress}}/api/v1/boards/n-ahead
+Content-Type: application/json
+
+{
+  "BoardId": "f13e2213352248998e3234618b346d8b",
+  "N": 5
+}
+
+### Get final state (detect stable/cyclic patterns)
+POST {{Life.Api_HostAddress}}/api/v1/boards/final
+Content-Type: application/json
+
+{
+  "BoardId": "f13e2213352248998e3234618b346d8b"
+}
+
+### DEBUG: Check if specific BoardId exists (if you have database access)
+# This is just for reference - you'd run this in your database
+# SELECT * FROM Boards WHERE Id = 'e5bfb5cd98324b1e95026fee3b39cb3d'
+# SELECT * FROM Snapshots WHERE BoardId = 'e5bfb5cd98324b1e95026fee3b39cb3d'
