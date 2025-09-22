@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo, useRef, useState, useEffect } from 'react';
-import type { BoardDto } from '../types/api';
+import type { BoardDto } from '../../types/api';
 
 interface GameBoardProps {
   board: BoardDto | null;

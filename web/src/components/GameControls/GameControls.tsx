@@ -12,7 +12,7 @@ import {
   Zap,
   Settings
 } from 'lucide-react';
-import type { GameState } from '../types/api';
+import type { GameState } from '../../types/api';
 
 interface GameControlsProps {
   gameState: GameState;

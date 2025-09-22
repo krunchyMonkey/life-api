@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Search, Plus, Eye, Info } from 'lucide-react';
-import { CONWAY_PATTERNS, centerPattern, getPatternDimensions } from '../constants/patterns';
-import type { ConwayPattern, BoardDto, Position } from '../types/api';
+import { CONWAY_PATTERNS, centerPattern, getPatternDimensions } from '../../constants/patterns';
+import type { ConwayPattern, BoardDto, Position } from '../../types/api';
 
 interface PatternLibraryProps {
   onPatternSelect: (pattern: ConwayPattern) => void;
