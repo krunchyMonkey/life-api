@@ -39,25 +39,25 @@ const Cell = memo<CellProps>(({
     }
   }, [x, y, onClick, readOnly]);
 
-  const cellStyle: React.CSSProperties = {
-    width: size,
-    height: size,
-    backgroundColor: isAlive ? '#22c55e' : '#f3f4f6',
-    border: showGrid ? '1px solid #d1d5db' : 'none',
-    cursor: readOnly ? 'default' : 'pointer',
-    transition: animated ? 'all 0.2s ease-in-out' : 'none',
-  };
-
-  const hoverStyle: React.CSSProperties = {
-    ...cellStyle,
-    backgroundColor: isAlive ? '#16a34a' : '#e5e7eb',
-  };
-
   const [isHovered, setIsHovered] = useState(false);
+
+  // Use Tailwind classes with dynamic styling
+  const cellClasses = `
+    game-cell
+    ${isAlive ? 'alive' : 'dead'}
+    ${!readOnly ? 'cursor-pointer' : 'cursor-default'}
+    ${animated ? 'transition-all duration-200' : ''}
+    ${isHovered && !readOnly ? 'scale-110' : ''}
+  `.trim().replace(/\s+/g, ' ');
 
   return (
     <div
-      style={isHovered && !readOnly ? hoverStyle : cellStyle}
+      className={cellClasses}
+      style={{ 
+        width: size, 
+        height: size,
+        border: showGrid ? '1px solid #d1d5db' : 'none'
+      }}
       onClick={handleClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -179,11 +179,11 @@ export const GameBoard: React.FC<GameBoardProps> = ({
 
   if (!board) {
     return (
-      <div className={`flex items-center justify-center bg-gray-100 rounded-lg ${className}`}>
-        <div className="text-center p-8">
-          <div className="text-gray-400 text-4xl mb-2">🏁</div>
-          <p className="text-gray-600">No board loaded</p>
-          <p className="text-sm text-gray-500 mt-1">Upload a board or create a new one to get started</p>
+      <div className={`info-card flex items-center justify-center min-h-[200px] ${className}`}>
+        <div className="text-center">
+          <div className="text-gray-400 text-6xl mb-3">🏁</div>
+          <p className="text-gray-700 font-medium text-lg">No board loaded</p>
+          <p className="text-gray-500 mt-2">Upload a board or create a new one to get started</p>
         </div>
       </div>
     );
@@ -194,7 +194,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
 
   return (
     <div 
-      className={`relative overflow-hidden bg-gray-100 rounded-lg border-2 border-gray-300 ${className}`}
+      className={`game-board relative overflow-hidden ${className}`}
       ref={containerRef}
       onWheel={handleWheel}
       onMouseDown={handleMouseDown}
@@ -210,14 +210,14 @@ export const GameBoard: React.FC<GameBoardProps> = ({
       aria-label={`Game of Life board, ${board.width} by ${board.height}, generation ${board.generation}`}
     >
       {/* Board Info Overlay */}
-      <div className="absolute top-2 left-2 bg-white bg-opacity-90 px-2 py-1 rounded text-xs font-mono">
+      <div className="absolute top-2 left-2 bg-white/90 px-3 py-1 rounded-md text-xs font-mono shadow-sm border border-gray-200">
         {board.width}×{board.height} | Gen: {board.generation} | Zoom: {(zoom * 100).toFixed(0)}%
       </div>
 
       {/* Controls Overlay */}
-      <div className="absolute top-2 right-2 bg-white bg-opacity-90 px-2 py-1 rounded text-xs">
-        <div>Scroll: Zoom | Ctrl+Drag: Pan</div>
-        <div>+/-: Zoom | 0: Reset | Arrows: Pan</div>
+      <div className="absolute top-2 right-2 bg-white/90 px-3 py-1 rounded-md text-xs shadow-sm border border-gray-200">
+        <div className="font-medium">Scroll: Zoom | Ctrl+Drag: Pan</div>
+        <div className="text-gray-600">+/-: Zoom | 0: Reset | Arrows: Pan</div>
       </div>
 
       {/* Game Board Grid */}
@@ -252,15 +252,15 @@ export const GameBoard: React.FC<GameBoardProps> = ({
 
       {/* Performance hint for large boards */}
       {board.width * board.height > 10000 && (
-        <div className="absolute bottom-2 left-2 bg-yellow-100 border border-yellow-400 px-2 py-1 rounded text-xs">
+        <div className="absolute bottom-2 left-2 bg-amber-50 border border-amber-200 px-3 py-1 rounded-md text-xs text-amber-800">
           ⚡ Large board detected. Consider disabling animations for better performance.
         </div>
       )}
 
       {/* Loading overlay */}
       {readOnly && (
-        <div className="absolute inset-0 bg-black bg-opacity-10 flex items-center justify-center">
-          <div className="bg-white px-3 py-1 rounded shadow text-sm">
+        <div className="absolute inset-0 bg-black/10 flex items-center justify-center">
+          <div className="bg-white px-3 py-2 rounded-md shadow-md text-sm font-medium">
             🔒 Read Only
           </div>
         </div>

@@ -71,15 +71,15 @@ export const GameControls: React.FC<GameControlsProps> = ({
   };
 
   return (
-    <div className={`bg-white rounded-lg shadow-lg border p-4 space-y-4 ${className}`}>
+    <div className={`info-card space-y-4 ${className}`}>
       {/* Primary Controls */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3 flex-wrap">
         {/* Play/Pause */}
         <button
           onClick={isPlaying ? onPause : onPlay}
           disabled={!hasBoard || isLoading}
-          className={`control-button ${
-            isPlaying ? 'control-button-danger' : 'control-button-primary'
+          className={`btn ${
+            isPlaying ? 'btn-danger' : 'btn-primary'
           } flex items-center gap-2`}
           aria-label={isPlaying ? 'Pause simulation' : 'Play simulation'}
         >
@@ -91,7 +91,7 @@ export const GameControls: React.FC<GameControlsProps> = ({
         <button
           onClick={onNextGeneration}
           disabled={!hasBoard || isLoading || isPlaying}
-          className="control-button control-button-secondary flex items-center gap-2"
+          className="btn flex items-center gap-2"
           aria-label="Advance one generation"
         >
           <SkipForward size={16} />
@@ -100,7 +100,7 @@ export const GameControls: React.FC<GameControlsProps> = ({
 
         {/* Speed Control */}
         <div className="flex items-center gap-2">
-          <label htmlFor="speed-slider" className="text-sm font-medium text-gray-700">
+          <label htmlFor="speed-slider" className="form-label text-sm mb-0">
             Speed:
           </label>
           <input
@@ -111,10 +111,10 @@ export const GameControls: React.FC<GameControlsProps> = ({
             step="0.1"
             value={speed}
             onChange={(e) => onSpeedChange(parseFloat(e.target.value))}
-            className="w-20 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+            className="w-20 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider:bg-blue-500"
             disabled={isLoading}
           />
-          <span className="text-sm text-gray-600 w-12">
+          <span className="text-sm text-gray-600 w-12 font-mono">
             {speed.toFixed(1)}x
           </span>
         </div>
@@ -122,7 +122,7 @@ export const GameControls: React.FC<GameControlsProps> = ({
         {/* Advanced Controls Toggle */}
         <button
           onClick={() => setShowAdvanced(!showAdvanced)}
-          className="control-button control-button-secondary ml-auto"
+          className="btn ml-auto"
           aria-label="Toggle advanced controls"
         >
           <Settings size={16} />
@@ -131,52 +131,58 @@ export const GameControls: React.FC<GameControlsProps> = ({
 
       {/* Board Info */}
       {hasBoard && (
-        <div className="flex items-center gap-4 text-sm text-gray-600 bg-gray-50 p-2 rounded">
-          <span>
-            <strong>Generation:</strong> {board.generation}
-          </span>
-          <span>
-            <strong>Size:</strong> {board.width}×{board.height}
-          </span>
-          <span>
-            <strong>Alive Cells:</strong> {aliveCellsCount}
-          </span>
-          <span>
-            <strong>Density:</strong> {((aliveCellsCount / (board.width * board.height)) * 100).toFixed(1)}%
-          </span>
+        <div className="stats-grid">
+          <div className="stat-item">
+            <div className="stat-value">{board.generation}</div>
+            <div className="stat-label">Generation</div>
+          </div>
+          <div className="stat-item">
+            <div className="stat-value">{board.width}×{board.height}</div>
+            <div className="stat-label">Size</div>
+          </div>
+          <div className="stat-item">
+            <div className="stat-value">{aliveCellsCount}</div>
+            <div className="stat-label">Alive Cells</div>
+          </div>
+          <div className="stat-item">
+            <div className="stat-value">{((aliveCellsCount / (board.width * board.height)) * 100).toFixed(1)}%</div>
+            <div className="stat-label">Density</div>
+          </div>
         </div>
       )}
 
       {/* Advanced Controls */}
       {showAdvanced && (
-        <div className="space-y-3 border-t pt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-4 border-t border-gray-200 pt-4">
+          <div className="flex flex-wrap items-center gap-3">
             {/* Advance N Generations */}
-            <form onSubmit={handleAdvanceSubmit} className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
               <FastForward size={16} className="text-gray-500" />
-              <input
-                type="number"
-                min="1"
-                max="1000"
-                value={advanceCount}
-                onChange={(e) => setAdvanceCount(parseInt(e.target.value) || 1)}
-                className="w-16 px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                disabled={isLoading}
-              />
-              <button
-                type="submit"
-                disabled={!hasBoard || isLoading || isPlaying}
-                className="control-button control-button-secondary text-sm"
-              >
-                Advance
-              </button>
-            </form>
+              <form onSubmit={handleAdvanceSubmit} className="flex items-center gap-2">
+                <input
+                  type="number"
+                  min="1"
+                  max="1000"
+                  value={advanceCount}
+                  onChange={(e) => setAdvanceCount(parseInt(e.target.value) || 1)}
+                  className="form-input w-16 text-sm"
+                  disabled={isLoading}
+                />
+                <button
+                  type="submit"
+                  disabled={!hasBoard || isLoading || isPlaying}
+                  className="btn text-sm"
+                >
+                  Advance
+                </button>
+              </form>
+            </div>
 
             {/* Get Final State */}
             <button
               onClick={onGetFinalState}
               disabled={!hasBoard || isLoading || isPlaying}
-              className="control-button control-button-secondary flex items-center gap-2 justify-center"
+              className="btn btn-warning flex items-center gap-2"
             >
               <Zap size={16} />
               Final State
@@ -184,7 +190,7 @@ export const GameControls: React.FC<GameControlsProps> = ({
           </div>
 
           {/* Board Management */}
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2">
               <Shuffle size={16} className="text-gray-500" />
               <input
@@ -194,13 +200,13 @@ export const GameControls: React.FC<GameControlsProps> = ({
                 step="0.1"
                 value={randomDensity}
                 onChange={(e) => setRandomDensity(parseFloat(e.target.value))}
-                className="w-16 px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-input w-16 text-sm"
                 disabled={isLoading}
               />
               <button
                 onClick={handleRandomizeClick}
                 disabled={!hasBoard || isLoading}
-                className="control-button control-button-secondary text-sm"
+                className="btn btn-success text-sm"
               >
                 Randomize
               </button>
@@ -209,7 +215,7 @@ export const GameControls: React.FC<GameControlsProps> = ({
             <button
               onClick={onClear}
               disabled={!hasBoard || isLoading}
-              className="control-button control-button-secondary flex items-center gap-2"
+              className="btn flex items-center gap-2"
             >
               <Square size={16} />
               Clear
@@ -218,7 +224,7 @@ export const GameControls: React.FC<GameControlsProps> = ({
             <button
               onClick={onReset}
               disabled={!hasBoard || isLoading || gameState.history.length === 0}
-              className="control-button control-button-secondary flex items-center gap-2"
+              className="btn flex items-center gap-2"
             >
               <RefreshCw size={16} />
               Reset
@@ -226,11 +232,11 @@ export const GameControls: React.FC<GameControlsProps> = ({
           </div>
 
           {/* Undo/Redo */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={onUndo}
               disabled={!canUndo || isLoading}
-              className="control-button control-button-secondary flex items-center gap-2"
+              className="btn flex items-center gap-2"
               aria-label="Undo last action"
             >
               <Undo2 size={16} />
@@ -240,7 +246,7 @@ export const GameControls: React.FC<GameControlsProps> = ({
             <button
               onClick={onRedo}
               disabled={!canRedo || isLoading}
-              className="control-button control-button-secondary flex items-center gap-2"
+              className="btn flex items-center gap-2"
               aria-label="Redo last action"
             >
               <Redo2 size={16} />
@@ -266,15 +272,15 @@ export const GameControls: React.FC<GameControlsProps> = ({
 
       {/* Keyboard Shortcuts Help */}
       {showAdvanced && (
-        <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded">
-          <strong>Keyboard Shortcuts:</strong> 
-          <div className="grid grid-cols-2 gap-1 mt-1">
-            <span>Space: Play/Pause</span>
-            <span>→: Next Generation</span>
-            <span>Ctrl+Z: Undo</span>
-            <span>Ctrl+Y: Redo</span>
-            <span>R: Randomize</span>
-            <span>C: Clear</span>
+        <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg border border-gray-100">
+          <div className="font-semibold text-gray-700 mb-2">Keyboard Shortcuts:</div> 
+          <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+            <span><kbd className="px-1 py-0.5 bg-white border rounded text-xs">Space</kbd> Play/Pause</span>
+            <span><kbd className="px-1 py-0.5 bg-white border rounded text-xs">→</kbd> Next Generation</span>
+            <span><kbd className="px-1 py-0.5 bg-white border rounded text-xs">Ctrl+Z</kbd> Undo</span>
+            <span><kbd className="px-1 py-0.5 bg-white border rounded text-xs">Ctrl+Y</kbd> Redo</span>
+            <span><kbd className="px-1 py-0.5 bg-white border rounded text-xs">R</kbd> Randomize</span>
+            <span><kbd className="px-1 py-0.5 bg-white border rounded text-xs">C</kbd> Clear</span>
           </div>
         </div>
       )}

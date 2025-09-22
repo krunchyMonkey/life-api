@@ -47,7 +47,7 @@ const PatternPreview: React.FC<PatternPreviewProps> = ({ pattern, size = 60 }) =
           return (
             <div
               key={`${x}-${y}`}
-              className={`pattern-cell ${isAlive ? 'bg-green-500' : 'bg-gray-200'}`}
+              className={`pattern-cell ${isAlive ? 'alive' : ''}`}
               style={{ width: cellSize, height: cellSize }}
             />
           );
@@ -102,10 +102,10 @@ const PatternCard: React.FC<{
           </div>
         )}
 
-        <div className="flex gap-1 mt-3">
+        <div className="flex gap-2 mt-3">
           <button
             onClick={onSelect}
-            className="flex-1 flex items-center justify-center gap-1 px-2 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 rounded transition-colors"
+            className="btn flex-1 flex items-center justify-center gap-1 text-xs"
           >
             <Eye size={12} />
             View
@@ -113,10 +113,8 @@ const PatternCard: React.FC<{
           <button
             onClick={onInsert}
             disabled={!canInsert}
-            className={`flex-1 flex items-center justify-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
-              canInsert
-                ? 'bg-green-100 hover:bg-green-200 text-green-700'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+            className={`flex-1 flex items-center justify-center gap-1 text-xs ${
+              canInsert ? 'btn btn-success' : 'btn'
             }`}
             title={canInsert ? 'Insert pattern into board' : 'No board loaded'}
           >
@@ -183,9 +181,9 @@ export const PatternLibrary: React.FC<PatternLibraryProps> = ({
   };
 
   return (
-    <div className={`bg-white rounded-lg shadow-lg border ${className}`}>
-      <div className="p-4 border-b">
-        <h2 className="text-lg font-semibold mb-4">Pattern Library</h2>
+    <div className={`info-card ${className}`}>
+      <div className="p-4 border-b border-gray-200">
+        <h2 className="text-xl font-bold mb-4 text-gray-800">Pattern Library</h2>
 
         {/* Search */}
         <div className="relative mb-4">
@@ -195,20 +193,20 @@ export const PatternLibrary: React.FC<PatternLibraryProps> = ({
             placeholder="Search patterns..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="form-input w-full pl-10"
           />
         </div>
 
         {/* Category Tabs */}
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-2 mb-3">
           {categories.map(category => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`px-3 py-1 text-sm rounded-full transition-colors ${
+              className={`px-4 py-2 text-sm rounded-full transition-all duration-200 font-medium ${
                 selectedCategory === category
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  ? 'btn-primary'
+                  : 'btn'
               }`}
             >
               {categoryLabels[category]}
