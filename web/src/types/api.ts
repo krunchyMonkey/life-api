@@ -110,6 +110,7 @@ export interface PerformanceMetrics {
   apiResponseTime: number; // ms
   cellsCount: number;
   generationsPerSecond: number;
+  lastUpdate?: number; // timestamp for throttling
 }
 
 // Local Storage types

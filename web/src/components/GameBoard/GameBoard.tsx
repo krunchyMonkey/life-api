@@ -1,4 +1,4 @@
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, memo } from 'react';
 import type { BoardDto } from '../../types/api';
 import Cell from './Cell';
 import { 
@@ -26,7 +26,45 @@ interface GameBoardProps {
   readOnly?: boolean;
 }
 
-export const GameBoard: React.FC<GameBoardProps> = ({
+// Custom comparison function to prevent unnecessary re-renders
+const areEqual = (prevProps: GameBoardProps, nextProps: GameBoardProps): boolean => {
+  // Quick reference check
+  if (prevProps.board === nextProps.board) return true;
+  
+  // If one is null and the other isn't
+  if (!prevProps.board || !nextProps.board) return false;
+  
+  // Compare board properties that affect rendering
+  if (
+    prevProps.board.width !== nextProps.board.width ||
+    prevProps.board.height !== nextProps.board.height ||
+    prevProps.board.generation !== nextProps.board.generation ||
+    prevProps.board.aliveCells.length !== nextProps.board.aliveCells.length
+  ) return false;
+  
+  // Compare alive cells efficiently
+  if (prevProps.board.aliveCells.length > 0) {
+    const prevCells = new Set(prevProps.board.aliveCells.map(c => `${c.x},${c.y}`));
+    const nextCells = new Set(nextProps.board.aliveCells.map(c => `${c.x},${c.y}`));
+    
+    if (prevCells.size !== nextCells.size) return false;
+    for (const cell of prevCells) {
+      if (!nextCells.has(cell)) return false;
+    }
+  }
+  
+  // Compare other props
+  return (
+    prevProps.onCellClick === nextProps.onCellClick &&
+    prevProps.cellSize === nextProps.cellSize &&
+    prevProps.showGrid === nextProps.showGrid &&
+    prevProps.className === nextProps.className &&
+    prevProps.animateChanges === nextProps.animateChanges &&
+    prevProps.readOnly === nextProps.readOnly
+  );
+};
+
+export const GameBoard: React.FC<GameBoardProps> = memo(({
   board,
   onCellClick,
   cellSize = 12,
@@ -124,6 +162,6 @@ export const GameBoard: React.FC<GameBoardProps> = ({
       <ReadOnlyOverlay readOnly={readOnly} />
     </div>
   );
-};
+}, areEqual);
 
 export default GameBoard;

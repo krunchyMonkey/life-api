@@ -74,6 +74,10 @@ export const useGameOfLife = (options: UseGameOfLifeOptions = {}): UseGameOfLife
   const intervalRef = useRef<number | null>(null);
   const historyIndexRef = useRef<number>(-1);
   const redoStackRef = useRef<BoardDto[]>([]);
+  const speedRef = useRef<number>(defaultSpeed);
+  const lastPerformanceUpdate = useRef<number>(0);
+  const pendingGenerationRef = useRef<boolean>(false);
+  const consecutiveErrorsRef = useRef<number>(0);
 
   // Computed state
   const isLoading = nextGenerationMutation.isPending || 
@@ -103,60 +107,92 @@ export const useGameOfLife = (options: UseGameOfLifeOptions = {}): UseGameOfLife
     }
   }, [gameState.board, gameState.speed, gameState.isPlaying, autoSave]);
 
-  // Performance tracking
+  // Performance tracking - throttled and disabled at high speeds to reduce re-renders
   const trackPerformance = useCallback((operation: string, startTime: number, endTime: number) => {
+    // Disable performance tracking at speeds higher than 10/sec to reduce re-renders
+    if (gameState.speed > 10) return;
+    
+    // Throttle performance updates to max 3 times per second
+    const now = Date.now();
+    if (now - lastPerformanceUpdate.current < 333) return;
+    
+    lastPerformanceUpdate.current = now;
+    
     const metrics: PerformanceMetrics = {
       generationTime: endTime - startTime,
       renderTime: 0, // This would be measured in the component
       apiResponseTime: endTime - startTime,
       cellsCount: gameState.board?.aliveCells.length || 0,
-      generationsPerSecond: gameState.speed
+      generationsPerSecond: gameState.speed,
+      lastUpdate: now
     };
     setPerformanceMetrics(metrics);
     console.log(`⏱️ ${operation}:`, metrics);
   }, [gameState.board, gameState.speed]);
 
-  // Add board to history
-  const addToHistory = useCallback((board: BoardDto) => {
+  // Set board - use functional update to avoid dependency on gameState.board
+  const setBoard = useCallback((board: BoardDto) => {
     setGameState(prev => {
-      const newHistory = [...prev.history, board].slice(-maxHistory);
-      return {
-        ...prev,
-        history: newHistory
-      };
+      // Add current board to history if it exists
+      if (prev.board) {
+        const newHistory = [...prev.history, prev.board].slice(-maxHistory);
+        historyIndexRef.current = -1;
+        redoStackRef.current = [];
+        return {
+          ...prev,
+          board,
+          history: newHistory
+        };
+      }
+      return { ...prev, board };
     });
-    historyIndexRef.current = -1;
-    redoStackRef.current = [];
+    setError(null);
   }, [maxHistory]);
 
-  // Set board
-  const setBoard = useCallback((board: BoardDto) => {
-    if (gameState.board) {
-      addToHistory(gameState.board);
-    }
-    setGameState(prev => ({ ...prev, board }));
-    setError(null);
-  }, [gameState.board, addToHistory]);
-
-  // Get next generation
+  // Get next generation - simplified with proper async handling
   const nextGeneration = useCallback(async () => {
-    if (!gameState.board) return;
+    if (!gameState.board || pendingGenerationRef.current) return;
 
     const startTime = performance.now();
+    pendingGenerationRef.current = true;
     
     try {
       const nextPositions = await nextGenerationMutation.mutateAsync(gameState.board);
       const nextBoard = positionsToBoard(nextPositions, gameState.board.width, gameState.board.height, (gameState.board.generation || 0) + 1);
+      
+      // Reset error counter on success
+      consecutiveErrorsRef.current = 0;
       setBoard(nextBoard);
       
       const endTime = performance.now();
       trackPerformance('Next Generation', startTime, endTime);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to get next generation');
+    } catch (err: any) {
+      console.error('❌ Next generation API error:', err);
+      consecutiveErrorsRef.current += 1;
+      
+      // Handle database concurrency errors gracefully
+      if (err.message?.includes('DbUpdateException') || 
+          err.message?.includes('EntityFrameworkCore') ||
+          err.message?.includes('entity changes')) {
+        console.warn('🔄 Database concurrency issue, skipping this generation');
+        
+        // If we get too many consecutive DB errors, pause the game
+        if (consecutiveErrorsRef.current >= 3) {
+          console.warn('⏸️ Too many consecutive DB errors, pausing game');
+          setGameState(prev => ({ ...prev, isPlaying: false }));
+          setError('Game paused due to database errors. Try reducing speed or restarting.');
+        }
+      } else {
+        // For other errors, show them to the user and pause
+        setGameState(prev => ({ ...prev, isPlaying: false }));
+        setError(err instanceof Error ? err.message : 'Failed to get next generation');
+      }
+    } finally {
+      pendingGenerationRef.current = false;
     }
   }, [gameState.board, nextGenerationMutation, setBoard, trackPerformance, positionsToBoard]);
 
-  // Advance multiple generations
+  // Advance multiple generations - simplified
   const advanceGenerations = useCallback(async (n: number) => {
     if (!gameState.board || n <= 0) return;
 
@@ -177,7 +213,7 @@ export const useGameOfLife = (options: UseGameOfLifeOptions = {}): UseGameOfLife
     }
   }, [gameState.board, advanceGenerationsMutation, setBoard, trackPerformance, positionsToBoard]);
 
-  // Get final state
+  // Get final state - simplified
   const getFinalState = useCallback(async () => {
     if (!gameState.board) return;
 
@@ -195,16 +231,54 @@ export const useGameOfLife = (options: UseGameOfLifeOptions = {}): UseGameOfLife
     }
   }, [gameState.board, finalStateMutation, setBoard, trackPerformance, positionsToBoard]);
 
-  // Play/pause controls
-  const play = useCallback(() => {
-    if (intervalRef.current) return; // Already playing
+  // Update speed ref whenever speed changes
+  useEffect(() => {
+    speedRef.current = gameState.speed;
+  }, [gameState.speed]);
 
+  // Auto-save to localStorage
+  useEffect(() => {
+    if (autoSave && gameState.board) {
+      localStorage.setItem('gameOfLife_currentBoard', JSON.stringify(gameState.board));
+      localStorage.setItem('gameOfLife_settings', JSON.stringify({
+        speed: gameState.speed,
+        isPlaying: gameState.isPlaying
+      }));
+    }
+  }, [gameState.board, gameState.speed, gameState.isPlaying, autoSave]);
+
+  // Game loop effect - manages the interval for automatic generation progression
+  useEffect(() => {
+    if (gameState.isPlaying && !pendingGenerationRef.current) {
+      const interval = Math.max(100, 1000 / gameState.speed); // Minimum 100ms between calls
+      
+      intervalRef.current = window.setInterval(() => {
+        // Only trigger next generation if there's no pending API call
+        if (!pendingGenerationRef.current) {
+          nextGeneration();
+        }
+      }, interval);
+    } else {
+      // Clear interval when not playing
+      if (intervalRef.current) {
+        window.clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    }
+
+    // Cleanup on unmount or when dependencies change
+    return () => {
+      if (intervalRef.current) {
+        window.clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [gameState.isPlaying, gameState.speed, nextGeneration]);
+
+  // Play/pause controls - simplified
+  const play = useCallback(() => {
     setGameState(prev => ({ ...prev, isPlaying: true }));
-    
-    intervalRef.current = window.setInterval(() => {
-      nextGeneration();
-    }, 1000 / gameState.speed);
-  }, [nextGeneration, gameState.speed]);
+  }, []);
 
   const pause = useCallback(() => {
     if (intervalRef.current) {
@@ -214,9 +288,9 @@ export const useGameOfLife = (options: UseGameOfLifeOptions = {}): UseGameOfLife
     setGameState(prev => ({ ...prev, isPlaying: false }));
   }, []);
 
-  // Reset to first generation
+  // Reset to first generation - simplified
   const reset = useCallback(() => {
-    pause();
+    setGameState(prev => ({ ...prev, isPlaying: false }));
     if (gameState.history.length > 0) {
       setGameState(prev => ({ 
         ...prev, 
@@ -226,11 +300,11 @@ export const useGameOfLife = (options: UseGameOfLifeOptions = {}): UseGameOfLife
     }
     historyIndexRef.current = -1;
     redoStackRef.current = [];
-  }, [pause, gameState.history]);
+  }, [gameState.history]);
 
-  // Clear board
+  // Clear board - simplified
   const clear = useCallback(() => {
-    pause();
+    setGameState(prev => ({ ...prev, isPlaying: false }));
     if (gameState.board) {
       const clearedBoard: BoardDto = {
         ...gameState.board,
@@ -239,20 +313,14 @@ export const useGameOfLife = (options: UseGameOfLifeOptions = {}): UseGameOfLife
       };
       setBoard(clearedBoard);
     }
-  }, [pause, gameState.board, setBoard]);
+  }, [gameState.board, setBoard]);
 
-  // Set speed
+  // Set speed - simplified
   const setSpeed = useCallback((speed: number) => {
     setGameState(prev => ({ ...prev, speed }));
-    
-    // If playing, restart with new speed
-    if (gameState.isPlaying) {
-      pause();
-      setTimeout(() => play(), 100);
-    }
-  }, [gameState.isPlaying, pause, play]);
+  }, []);
 
-  // Undo/redo
+  // Undo/redo - simplified
   const undo = useCallback(() => {
     if (!canUndo) return;
 
@@ -276,7 +344,7 @@ export const useGameOfLife = (options: UseGameOfLifeOptions = {}): UseGameOfLife
     }
   }, [canRedo]);
 
-  // Toggle individual cell
+  // Toggle individual cell - simplified
   const toggleCell = useCallback((x: number, y: number) => {
     if (!gameState.board) return;
 
@@ -294,7 +362,7 @@ export const useGameOfLife = (options: UseGameOfLifeOptions = {}): UseGameOfLife
     setBoard(newBoard);
   }, [gameState.board, setBoard]);
 
-  // Randomize board
+  // Randomize board - simplified  
   const randomizeBoard = useCallback((density = 0.3) => {
     if (!gameState.board) return;
 
