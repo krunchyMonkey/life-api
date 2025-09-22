@@ -1,0 +1,206 @@
+{
+	"info": {
+		"_postman_id": "aa9b9258-20c4-48a0-872b-14408d725198",
+		"name": "Life.Api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33876984",
+		"_collection_link": "https://payroll-technology.postman.co/workspace/POC---KK~b1dacc73-ef5c-4f4c-a7b3-5ef49b39e0a1/collection/33876984-aa9b9258-20c4-48a0-872b-14408d725198?action=share&source=collection_link&creator=33876984"
+	},
+	"item": [
+		{
+			"name": "Upload a board - Start Here!",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var response = pm.response.json();\r",
+							"pm.environment.set(\"BoardId\", response.boardId);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"Width\": 5,\r\n  \"Height\": 5,\r\n  \"Alive\": [\r\n    [2, 1],\r\n    [2, 2],\r\n    [2, 3]\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/v1/boards/upload",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"v1",
+						"boards",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get next board generation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"BoardId\": \"{{BoardId}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/v1/boards/next",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"v1",
+						"boards",
+						"next"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upload a Block Pattern (stable - doesn't change)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var response = pm.response.json;\r",
+							"pm.environment.set(\"BoardId\", response.boardId);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"Width\": 4,\r\n  \"Height\": 4,\r\n  \"Alive\": [\r\n    [1, 1],\r\n    [1, 2],\r\n    [2, 1],\r\n    [2, 2]\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/boards/upload",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"boards",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get N generations ahead",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"BoardId\": \"{{BoardId}}\",\r\n  \"N\": 5\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/boards/n-ahead",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"boards",
+						"n-ahead"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get final state (detect stable/cyclic patterns)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"BoardId\": \"{{BoardId}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/v1/boards/final",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"v1",
+						"boards",
+						"final"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

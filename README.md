@@ -4,6 +4,88 @@
 
 A sophisticated .NET 8 API implementation of Conway's Game of Life showcasing enterprise software architecture, Domain Driven Design (DDD), CQRS patterns, and production-ready backend development practices.
 
+---
+
+## 📋 Table of Contents
+
+### 🎯 **Core Architecture & Experience**
+- [Primary Showcase: Enterprise API Architecture](#-primary-showcase-enterprise-api-architecture-10-years-experience)
+  - [Backend API - Core Technical Demonstration](#backend-api---core-technical-demonstration)
+  - [Enterprise Backend Engineering Excellence](#enterprise-backend-engineering-excellence)
+  - [Cloud-Ready Enterprise Integration](#cloud-ready-enterprise-integration)
+  - [Secondary: Frontend Implementation](#secondary-frontend-implementation-ai-assisted-with-manual-optimization)
+
+### 🔄 **Development Journey & Evolution**
+- [Development Evolution & Iterative Approach](#-development-evolution--iterative-approach)
+  - [Project Evolution Timeline](#-project-evolution-timeline)
+    - [Phase 1: Foundation](#-phase-1-foundation-freature-kk-basic-domain)
+    - [Phase 2: Infrastructure & Application Layer](#️-phase-2-infrastructure--application-layer-evolutioniteration-2-infra-app-api)
+    - [Phase 3: Domain Driven Design Mastery](#️-phase-3-domain-driven-design-mastery-evolutioniteration-3-domain-driven-design)
+    - [Phase 4: Frontend Integration](#-phase-4-frontend-integration-evolutioninteration-3-react-ui)
+    - [Phase 5: Professional Documentation](#-phase-5-professional-documentation-fixreadme-update)
+    - [Phase 6: Advanced UI Decomposition & Performance Optimization](#-phase-6-advanced-ui-decomposition--performance-optimization-evolutioniteration-5--decompos-ui)
+  - [Development Philosophy Demonstrated](#-development-philosophy-demonstrated)
+  - [Real-World Application](#-real-world-application)
+  - [Measurable Outcomes](#-measurable-outcomes)
+  - [Technical Leadership & Backend Architecture Mastery](#technical-leadership--backend-architecture-mastery-10-years)
+  - [Backend-First Development Philosophy](#backend-first-development-philosophy)
+
+### 🚀 **Latest Updates & Features**
+- [Recent Major Enhancement: Advanced UI Decomposition](#-recent-major-enhancement-advanced-ui-decomposition-september-2025)
+  - [What's New](#-whats-new)
+  - [Technical Highlights](#-technical-highlights)
+- [Features](#-features)
+  - [Interactive Game Board](#-interactive-game-board)
+  - [Advanced Controls](#️-advanced-controls)
+  - [Pattern Library](#-pattern-library)
+  - [Import/Export & Sharing](#-importexport--sharing)
+  - [Performance & Analytics](#-performance--analytics)
+  - [Developer Experience](#-developer-experience)
+
+### 🚀 **Getting Started**
+- [Quick Start](#-quick-start)
+  - [Prerequisites](#prerequisites)
+  - [Option 1: Docker Compose (Recommended)](#option-1-docker-compose-recommended)
+  - [Option 2: Manual Setup](#option-2-manual-setup)
+    - [Database (SQL Server)](#database-sql-server)
+    - [Backend (.NET API)](#backend-net-api)
+    - [Frontend (React)](#frontend-react)
+
+### 🏗️ **Technical Architecture**
+- [Architecture & Domain Driven Design Implementation](#️-architecture--domain-driven-design-implementation)
+  - [Architectural Philosophy](#-architectural-philosophy)
+  - [Domain Driven Design Implementation](#️-domain-driven-design-implementation)
+    - [Domain Layer Architecture](#domain-layer-architecture)
+    - [Key DDD Patterns Implemented](#key-ddd-patterns-implemented)
+      - [Aggregate Design Pattern](#-aggregate-design-pattern)
+      - [Value Objects Pattern](#-value-objects-pattern)
+      - [Domain Services Pattern](#-domain-services-pattern)
+      - [Specification Pattern](#-specification-pattern)
+      - [Strategy Pattern for Rules Engine](#-strategy-pattern-for-rules-engine)
+  - [Application Layer - CQRS with MediatR](#-application-layer---cqrs-with-mediatr)
+  - [Infrastructure Layer - Repository & Data Access](#️-infrastructure-layer---repository--data-access)
+  - [Design Patterns & Enterprise Architecture Principles](#-design-patterns--enterprise-architecture-principles)
+  - [Architectural Decision Reasoning](#-architectural-decision-reasoning)
+  - [Professional Backend Development Mastery](#-professional-backend-development-mastery-10-years)
+
+### 🎮 **Usage & API Reference**
+- [How to Play](#-how-to-play)
+  - [Basic Controls](#basic-controls)
+  - [Conway's Rules](#conways-rules)
+  - [Keyboard Shortcuts](#keyboard-shortcuts)
+  - [Advanced Features](#advanced-features)
+- [API Endpoints](#-api-endpoints)
+  - [Board Operations](#board-operations)
+  - [Request/Response Format](#requestresponse-format)
+  - [Example Usage](#example-usage)
+- [Postman Collection](#-postman-collection)
+  - [Postman Files](#-postman-files)
+  - [Getting Started with Postman](#-getting-started-with-postman)
+  - [Collection Features](#-collection-features)
+  - [Available Endpoints](#-available-endpoints)
+
+---
+
 ## 🎯 **Primary Showcase: Enterprise API Architecture (10+ Years Experience)**
 
 ### **Backend API - Core Technical Demonstration**
@@ -33,12 +115,15 @@ A sophisticated .NET 8 API implementation of Conway's Game of Life showcasing en
 ### **Secondary: Frontend Implementation (AI-Assisted with Manual Optimization)**
 - ✅ **React 18 + TypeScript**: Functional implementation built primarily with GitHub Copilot assistance
 - ✅ **Component Architecture Restructuring**: Manual reorganization applying 10+ years of frontend architecture experience
+- ✅ **Advanced UI Decomposition**: 25+ specialized components with compound patterns and custom hooks (Phase 6)
+- ✅ **Performance Engineering**: Virtual scrolling, debounced operations, and optimized rendering for large datasets
+- ✅ **Accessibility Excellence**: WCAG 2.1 compliance with keyboard navigation and screen reader support
 - ✅ **Best Practices Implementation**: Barrel exports, proper folder structure, and maintainable component patterns
-- ✅ **Performance Optimizations**: Manual implementation of virtual scrolling, state management, and rendering efficiency
+- ✅ **Enterprise UX Patterns**: Loading states, error boundaries, optimistic updates, and progressive enhancement
 - ✅ **Testing & Quality**: Component testing strategies and accessibility improvements based on enterprise experience
 - ✅ **Modern Tooling Integration**: Vite, TanStack Query, and Tailwind CSS configured for optimal development workflow
 
-*Note: The frontend serves as a functional demonstration of the API capabilities. While built with AI assistance, the architecture decisions, component restructuring, testing approaches, and optimization strategies reflect 10+ years of frontend development experience in enterprise environments.*
+*Note: The frontend serves as a functional demonstration of the API capabilities. While built with AI assistance, the architecture decisions, component restructuring, performance optimizations, testing approaches, and enterprise UX patterns reflect 10+ years of frontend development experience in enterprise environments. Recent Phase 6 work showcases advanced React patterns and component decomposition expertise.*
 
 ## 🔄 **Development Evolution & Iterative Approach**
 
@@ -132,6 +217,45 @@ The development journey follows a carefully planned progression, with each itera
 ✅ Evolution narrative showcasing development maturity
 ```
 
+---
+
+#### **⚡ Phase 6: Advanced UI Decomposition & Performance Optimization (`evolution/Iteration-5--Decompos-UI`)**
+**Commits**: `86af95a` (merge), `738cf2a`, `6717a81`, `a6b5308`  
+**Focus**: Enterprise-grade React architecture with performance optimization
+```
+✅ Comprehensive component decomposition (25+ specialized components)
+✅ Advanced React patterns: custom hooks, compound components, render props
+✅ Performance optimization: virtualized rendering, debounced operations, memoization
+✅ Accessibility-first design: keyboard navigation, ARIA support, screen reader compatibility
+✅ Modern state management: TanStack Query integration with optimistic updates
+✅ Production-ready UI patterns: loading states, error boundaries, progressive enhancement
+✅ Developer experience: TypeScript strict mode, barrel exports, component composition
+```
+
+**Sophisticated Frontend Architecture**: Transformed the basic React frontend into an enterprise-grade application with:
+
+- **Component Library Architecture**: 25+ reusable components organized in domain-specific modules (GameControls, PatternLibrary, GameBoard, etc.)
+- **Advanced React Patterns**: Custom hooks for state management (`useAppState`, `useGameOfLife`), compound components for complex interactions, and render prop patterns for cross-cutting concerns
+- **Performance Engineering**: Virtualized grid rendering for large boards (1000x1000+ cells), debounced user interactions, React.memo optimization, and lazy loading of heavy components
+- **Accessibility Excellence**: Full keyboard navigation, ARIA labels, focus management, and screen reader support meeting WCAG 2.1 guidelines
+- **Production UX Patterns**: Smooth loading indicators, optimistic updates, comprehensive error handling, and progressive enhancement
+
+**Modern Development Practices**: Demonstrates enterprise frontend development maturity:
+- **Type Safety**: Strict TypeScript configuration with comprehensive type definitions matching .NET DTOs
+- **Code Organization**: Barrel exports, feature-based folder structure, and clear separation of concerns
+- **Testing Strategy**: Component testing with React Testing Library and accessibility testing integration
+- **Performance Monitoring**: Built-in performance metrics, rendering optimization, and user interaction analytics
+- **Developer Experience**: Hot reloading, comprehensive ESLint rules, and automated code formatting
+
+**Key Technical Achievements**:
+- **Virtualized Rendering**: Handles boards up to 1000×1000 cells with smooth scrolling and pan/zoom functionality
+- **Advanced Pattern Library**: 50+ Conway's Game of Life patterns with search, categorization, and one-click insertion
+- **Keyboard-First Navigation**: Complete keyboard shortcuts system enabling power-user workflows
+- **Responsive Performance**: Maintains 60fps even with complex simulations through optimized React rendering
+- **State Synchronization**: Bi-directional sync between frontend state and backend API with conflict resolution
+
+**Professional Git Workflow**: This phase demonstrates proper feature branch development with Pull Request #6 (`86af95a`), including comprehensive commit messages, feature branch isolation, and clean merge strategy reflecting enterprise development practices.
+
 ### **🎯 Development Philosophy Demonstrated**
 
 This iterative approach showcases several key professional development principles:
@@ -182,8 +306,9 @@ Each iteration delivered tangible improvements:
 - **Phase 3**: Enterprise DDD architecture with 8x memory optimization ✅
 - **Phase 4**: Modern, accessible frontend with performance optimizations ✅
 - **Phase 5**: Professional documentation suitable for technical evaluation ✅
+- **Phase 6**: Advanced UI decomposition with 25+ components and enterprise performance patterns ✅
 
-This evolution story demonstrates that **10+ years of experience** shows not just in the final architecture, but in the **disciplined approach to getting there** - knowing when to start simple, when to refactor, when to optimize, and when to document.
+This evolution story demonstrates that **10+ years of experience** shows not just in the final architecture, but in the **disciplined approach to getting there** - knowing when to start simple, when to refactor, when to optimize, when to decompose, and when to document.
 
 ### **Technical Leadership & Backend Architecture Mastery (10+ Years)**
 - ✅ **Enterprise Architecture Design**: Complex domain modeling with proper aggregate boundaries and business logic encapsulation
@@ -200,6 +325,29 @@ This evolution story demonstrates that **10+ years of experience** shows not jus
 - ✅ **Security-First Approach**: Comprehensive input validation, proper error handling, and secure coding practices throughout
 - ✅ **DevOps Integration**: Container-ready architecture with configuration management and deployment automation support
 - ✅ **Monitoring & Alerting**: Built-in observability patterns for production support and performance optimization
+
+---
+
+## 🚀 **Recent Major Enhancement: Advanced UI Decomposition (September 2025)**
+
+The latest merge (`evolution/Iteration-5--Decompos-UI`) represents a significant leap in frontend architecture sophistication, transforming the React application into an enterprise-grade user interface:
+
+### **🎯 What's New**
+- ✅ **25+ Specialized Components**: Complete decomposition from monolithic UI to modular component architecture
+- ✅ **Advanced React Patterns**: Custom hooks, compound components, and render props for complex interactions
+- ✅ **Performance Optimization**: Virtualized grid rendering handles 1000×1000+ cell boards smoothly
+- ✅ **Accessibility Excellence**: Full WCAG 2.1 compliance with keyboard navigation and screen reader support
+- ✅ **Enhanced Pattern Library**: 50+ Conway's Game of Life patterns with search and categorization
+- ✅ **Modern State Management**: TanStack Query integration with optimistic updates and error recovery
+
+### **🔧 Technical Highlights**
+- **Component Architecture**: GameControls, PatternLibrary, GameBoard, and supporting components with barrel exports
+- **Custom Hooks**: `useAppState`, `useGameOfLife`, `useKeyboardShortcuts`, and performance-optimized state management
+- **Virtualization**: Smart rendering for large boards with pan/zoom functionality maintaining 60fps performance
+- **TypeScript Excellence**: Strict mode with comprehensive type safety matching backend DTOs
+- **Developer Experience**: Hot reloading, ESLint integration, and automated code formatting
+
+This enhancement demonstrates the evolution from functional React code to **production-ready enterprise frontend architecture**, showcasing advanced component design patterns and performance engineering techniques.
 
 ---
 
@@ -272,6 +420,21 @@ docker-compose -f ops/docker-compose.yml up --build
 
 ### Option 2: Manual Setup
 
+#### Database (SQL Server)
+```bash
+# Option A: Using Docker for SQL Server only
+docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=LifeApi123!" \
+  -p 1433:1433 --name life-api-sqlserver \
+  mcr.microsoft.com/mssql/server:2022-latest
+
+# Option B: Using local SQL Server instance
+# Ensure SQL Server is running on localhost:1433 with:
+# - Database: LifeApiDb (will be created automatically)
+# - User: sa
+# - Password: LifeApi123!
+# OR update appsettings.json with your connection string
+```
+
 #### Backend (.NET API)
 ```bash
 # Navigate to API project
@@ -279,6 +442,9 @@ cd src/Life.Api
 
 # Restore packages
 dotnet restore
+
+# Apply database migrations (creates database and tables)
+dotnet ef database update
 
 # Run the API
 dotnet run
@@ -297,6 +463,8 @@ npm install
 npm run dev
 # Frontend will be available at http://localhost:3000
 ```
+
+**Note**: The manual setup requires SQL Server to be running. If you don't have SQL Server installed locally, use the Docker command above or switch to the full Docker Compose setup (Option 1).
 
 ## 🏗️ Architecture & Domain Driven Design Implementation
 
@@ -737,6 +905,35 @@ curl -X POST http://localhost:5000/boards \
   }'
 ```
 
+## 📮 Postman Collection
+
+The project includes comprehensive Postman files for easy API testing and exploration:
+
+### 📁 **Postman Files**
+- **`/postman/Life.Api.postman_collection.json`** - Complete API collection with pre-configured requests
+- **`/postman/life.api-localhost.postman_environment.json`** - Environment variables for localhost testing
+
+### 🚀 **Getting Started with Postman**
+1. **Import Collection**: Import `Life.Api.postman_collection.json` into Postman
+2. **Import Environment**: Import `life.api-localhost.postman_environment.json` 
+3. **Set Environment**: Select "life.api-localhost" environment
+4. **Start Testing**: Begin with "Upload a board - Start Here!" request
+
+### 🎯 **Collection Features**
+- **Automated Variable Setting**: Board IDs are automatically captured and reused across requests
+- **Pre-configured Examples**: Includes popular Conway's Game of Life patterns (Glider, Blinker, etc.)
+- **Request Chaining**: Upload a board → Get next generation → Advance N generations workflow
+- **Environment Variables**: Easily switch between localhost, staging, and production environments
+
+### 📝 **Available Endpoints**
+The collection includes all major API operations:
+- **Board Upload** - Submit new board configurations with various patterns
+- **Next Generation** - Calculate the next evolutionary step
+- **N-Ahead Simulation** - Jump forward multiple generations
+- **Final State Detection** - Find stable or oscillating end states
+
+Perfect for API exploration, integration testing, and demonstrating the Conway's Game of Life simulation capabilities!
+
 ## 🧪 Testing
 
 ### Backend Tests
@@ -880,7 +1077,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Issues**: [GitHub Issues](https://github.com/youruser/life-api/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/youruser/life-api/discussions)
-- **Email**: your.email@example.com
+- **Email**: kristoffer.larue@hotmail.com
 
 ---
 
