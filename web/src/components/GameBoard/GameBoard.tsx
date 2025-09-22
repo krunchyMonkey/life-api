@@ -1,7 +1,12 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useMemo } from 'react';
 import type { BoardDto } from '../../types/api';
 import Cell from './Cell';
-import { useAliveCells, useBoardDimensions, BoardUtils } from './GameBoard.utils';
+import { 
+  useAliveCells, 
+  useBoardDimensions, 
+  useGameBoardKeyboardHandler,
+  BoardUtils 
+} from './GameBoard.utils';
 import { useGameBoardViewport } from '../../hooks/useGameBoardViewport';
 import { 
   BoardInfoOverlay, 
@@ -31,8 +36,22 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   readOnly = false
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Create a memoized board key to trigger viewport reset when board dimensions change
+  const boardKey = useMemo(() => 
+    board ? `${board.width}-${board.height}` : 'no-board', 
+    [board?.width, board?.height]
+  );
+  
   const { viewport, handlers, resetViewport } = useGameBoardViewport();
   const { zoom, pan, isDragging } = viewport;
+  
+  // Reset viewport when board key changes (replaces useEffect)
+  const currentBoardKey = useRef(boardKey);
+  if (currentBoardKey.current !== boardKey) {
+    currentBoardKey.current = boardKey;
+    resetViewport();
+  }
   
   // Create lookup set for alive cells
   const aliveCellsSet = useAliveCells(board);
@@ -40,52 +59,12 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   // Calculate board dimensions
   const boardDimensions = useBoardDimensions(board, cellSize, zoom);
 
-  // Reset viewport when board changes
-  useEffect(() => {
-    resetViewport();
-  }, [board?.width, board?.height, resetViewport]);
-
-  // Handle keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.target !== document.body) return;
-
-      switch (e.key) {
-        case '+':
-        case '=':
-          e.preventDefault();
-          handlers.handleZoom(1.2);
-          break;
-        case '-':
-          e.preventDefault();
-          handlers.handleZoom(0.8);
-          break;
-        case '0':
-          e.preventDefault();
-          resetViewport();
-          break;
-        case 'ArrowUp':
-          e.preventDefault();
-          handlers.handlePan({ x: 0, y: 20 });
-          break;
-        case 'ArrowDown':
-          e.preventDefault();
-          handlers.handlePan({ x: 0, y: -20 });
-          break;
-        case 'ArrowLeft':
-          e.preventDefault();
-          handlers.handlePan({ x: 20, y: 0 });
-          break;
-        case 'ArrowRight':
-          e.preventDefault();
-          handlers.handlePan({ x: -20, y: 0 });
-          break;
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handlers, resetViewport]);
+  // Keyboard handler using utility (replaces large switch statement)
+  const handleKeyDown = useGameBoardKeyboardHandler({
+    handleZoom: handlers.handleZoom,
+    handlePan: handlers.handlePan,
+    resetViewport
+  });
 
   if (!board) {
     return <EmptyBoard className={className} />;
@@ -100,6 +79,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
       onMouseMove={handlers.handleMouseMove}
       onMouseUp={handlers.handleMouseUp}
       onMouseLeave={handlers.handleMouseUp}
+      onKeyDown={handleKeyDown}
       style={{ 
         cursor: isDragging ? 'grabbing' : 'grab',
         userSelect: 'none'
