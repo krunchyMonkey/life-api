@@ -39,6 +39,24 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
+    /// Adds CORS services with permissive policy for development
+    /// </summary>
+    public static IServiceCollection AddCorsServices(this IServiceCollection services)
+    {
+        services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(policy =>
+            {
+                policy.AllowAnyOrigin()
+                      .AllowAnyMethod()
+                      .AllowAnyHeader();
+            });
+        });
+        
+        return services;
+    }
+
+    /// <summary>
     /// Adds MediatR with validation pipeline behavior
     /// </summary>
     public static IServiceCollection AddMediatRServices(this IServiceCollection services)
@@ -76,6 +94,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddApiServices()
                 .AddDocumentationServices()
+                .AddCorsServices()
                 .AddMediatRServices()
                 .AddInfrastructureServices(configuration);
                 

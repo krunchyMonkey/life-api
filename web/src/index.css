@@ -1,0 +1,121 @@
+/* Basic CSS Reset and Layout */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: #f9fafb;
+  color: #1f2937;
+  line-height: 1.5;
+}
+
+/* App Layout */
+.app {
+  min-height: 100vh;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Grid Styles */
+.game-board {
+  display: inline-block;
+  border: 2px solid #374151;
+  background: white;
+  margin-bottom: 20px;
+}
+
+.game-row {
+  display: flex;
+  line-height: 0;
+}
+
+.game-cell {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #d1d5db;
+  cursor: pointer;
+  background-color: white;
+}
+
+.game-cell.alive {
+  background-color: #10b981;
+}
+
+.game-cell:hover {
+  background-color: #f3f4f6;
+}
+
+.game-cell.alive:hover {
+  background-color: #059669;
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 8px 16px;
+  border: 1px solid #d1d5db;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn:hover {
+  background-color: #f9fafb;
+}
+
+.btn.primary {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.btn.primary:hover {
+  background-color: #2563eb;
+}
+
+.btn.success {
+  background-color: #10b981;
+  color: white;
+  border-color: #10b981;
+}
+
+.btn.success:hover {
+  background-color: #059669;
+}
+
+.btn.danger {
+  background-color: #ef4444;
+  color: white;
+  border-color: #ef4444;
+}
+
+.btn.danger:hover {
+  background-color: #dc2626;
+}
+
+/* Status */
+.status {
+  margin-bottom: 20px;
+  padding: 10px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+}
+
+/* Input fields */
+input, select {
+  padding: 4px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+}
