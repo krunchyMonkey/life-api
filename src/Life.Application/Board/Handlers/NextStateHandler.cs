@@ -1,6 +1,6 @@
 ﻿using Life.Application.Board.Commands;
 using Life.Application.Board.Contracts;
-using Life.Infrastructure.Repositories;
+using Life.Domain.Repositories;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

@@ -1,0 +1,293 @@
+using Life.Domain.Services;
+using Life.Domain.ValueObjects;
+
+namespace Life.Application.GameSession.Contracts
+{
+    // Request DTOs
+    public sealed record CreateSessionRequest
+    {
+        public string Name { get; init; } = "";
+        public int Width { get; init; }
+        public int Height { get; init; }
+        public List<CellRequest> InitialCells { get; init; } = new();
+        public string CreatedBy { get; init; } = "";
+        public SessionSettingsRequest? Settings { get; init; }
+    }
+
+    public sealed record CreateFromPatternRequest
+    {
+        public string Name { get; init; } = "";
+        public int Width { get; init; }
+        public int Height { get; init; }
+        public PatternType Pattern { get; init; }
+        public PositionRequest? CenterPosition { get; init; }
+        public string CreatedBy { get; init; } = "";
+        public SessionSettingsRequest? Settings { get; init; }
+    }
+
+    public sealed record AdvanceGenerationRequest
+    {
+        public Guid SessionId { get; init; }
+    }
+
+    public sealed record AdvanceGenerationsRequest
+    {
+        public Guid SessionId { get; init; }
+        public int Count { get; init; }
+    }
+
+    public sealed record RunToCompletionRequest
+    {
+        public Guid SessionId { get; init; }
+        public int MaxIterations { get; init; } = 1000;
+        public int MaxTimeMinutes { get; init; } = 5;
+    }
+
+    public sealed record CreateSnapshotRequest
+    {
+        public Guid SessionId { get; init; }
+        public string? Description { get; init; }
+    }
+
+    public sealed record RestoreSnapshotRequest
+    {
+        public Guid SessionId { get; init; }
+        public Guid SnapshotId { get; init; }
+    }
+
+    public sealed record UpdateSessionStatusRequest
+    {
+        public Guid SessionId { get; init; }
+        public string Action { get; init; } = ""; // "pause", "resume", "archive"
+        public string? Reason { get; init; }
+    }
+
+    public sealed record ArchiveSessionRequest
+    {
+        public string? Reason { get; init; }
+    }
+
+    public sealed record CompareSessionsRequest
+    {
+        public Guid Session1Id { get; init; }
+        public Guid Session2Id { get; init; }
+        public int GenerationsToCompare { get; init; } = 10;
+    }
+
+    public sealed record GetUserSessionsRequest
+    {
+        public string CreatedBy { get; init; } = "";
+    }
+
+    public sealed record SearchSessionsRequest
+    {
+        public string? NamePattern { get; init; }
+        public string? CreatedBy { get; init; }
+        public string? Status { get; init; }
+        public DateTime? CreatedAfter { get; init; }
+        public DateTime? CreatedBefore { get; init; }
+    }
+
+    // Supporting Request DTOs
+    public sealed record CellRequest
+    {
+        public int X { get; init; }
+        public int Y { get; init; }
+    }
+
+    public sealed record PositionRequest
+    {
+        public int X { get; init; }
+        public int Y { get; init; }
+    }
+
+    public sealed record SessionSettingsRequest
+    {
+        public bool AutoSnapshotEnabled { get; init; } = true;
+        public int AutoSnapshotInterval { get; init; } = 10;
+        public int MaxSnapshots { get; init; } = 50;
+        public int SessionTimeoutHours { get; init; } = 24;
+        public bool AllowConcurrentAccess { get; init; } = false;
+    }
+
+    // Response DTOs
+    public sealed record GameSessionResponse
+    {
+        public Guid Id { get; init; }
+        public string Name { get; init; } = "";
+        public DimensionsResponse Dimensions { get; init; } = new();
+        public int CurrentGeneration { get; init; }
+        public string Status { get; init; } = "";
+        public DateTime CreatedAt { get; init; }
+        public DateTime LastModified { get; init; }
+        public string CreatedBy { get; init; } = "";
+        public SessionStatisticsResponse Statistics { get; init; } = new();
+    }
+
+    public sealed record BoardResponse
+    {
+        public int Generation { get; init; }
+        public DimensionsResponse Dimensions { get; init; } = new();
+        public List<CellResponse> LivingCells { get; init; } = new();
+        public DateTime GeneratedAt { get; init; }
+    }
+
+    public sealed record FinalResultResponse
+    {
+        public bool IsStable { get; init; }
+        public BoardResponse? FinalBoard { get; init; }
+        public int FinalGeneration { get; init; }
+        public string Outcome { get; init; } = "";
+        public TimeSpan ExecutionTime { get; init; }
+        public DateTime CompletedAt { get; init; }
+    }
+
+    public sealed record SnapshotResponse
+    {
+        public Guid Id { get; init; }
+        public string Name { get; init; } = "";
+        public string? Description { get; init; }
+        public BoardResponse Board { get; init; } = new();
+        public DateTime CreatedAt { get; init; }
+        public bool IsAutoGenerated { get; init; }
+    }
+
+    public sealed record SessionStatisticsResponse
+    {
+        public int TotalGenerations { get; init; }
+        public int LivingCells { get; init; }
+        public int DeadCells { get; init; }
+        public double PopulationDensity { get; init; }
+        public int BirthsThisGeneration { get; init; }
+        public int DeathsThisGeneration { get; init; }
+        public TimeSpan TotalRuntime { get; init; }
+        public int SnapshotCount { get; init; }
+        public DateTime LastActivity { get; init; }
+    }
+
+    public sealed record SessionAnalysisResponse
+    {
+        public bool HasOscillators { get; init; }
+        public bool HasStillLifes { get; init; }
+        public bool HasSpaceships { get; init; }
+        public List<string> DetectedPatterns { get; init; } = new();
+        public double StabilityScore { get; init; }
+        public int CycleLength { get; init; }
+        public string AnalysisNotes { get; init; } = "";
+    }
+
+    public sealed record SessionComparisonResponse
+    {
+        public Guid Session1Id { get; init; }
+        public Guid Session2Id { get; init; }
+        public double SimilarityScore { get; init; }
+        public List<string> CommonPatterns { get; init; } = new();
+        public List<string> Differences { get; init; } = new();
+        public string ComparisonSummary { get; init; } = "";
+    }
+
+    // Supporting Response DTOs
+    public sealed record CellResponse
+    {
+        public int X { get; init; }
+        public int Y { get; init; }
+    }
+
+    public sealed record DimensionsResponse
+    {
+        public int Width { get; init; }
+        public int Height { get; init; }
+    }
+
+    // Mapping Extensions
+    public static class GameSessionMappingExtensions
+    {
+        public static GameSessionResponse ToResponse(this Life.Domain.Aggregates.GameSession session)
+        {
+            var stats = session.GetStatistics();
+            return new GameSessionResponse
+            {
+                Id = session.Id,
+                Name = session.Name,
+                Dimensions = new DimensionsResponse { Width = session.Board.Width, Height = session.Board.Height },
+                CurrentGeneration = session.CurrentGeneration,
+                Status = session.Status.ToString(),
+                CreatedAt = session.CreatedAt,
+                LastModified = session.LastModified,
+                CreatedBy = session.CreatedBy,
+                Statistics = stats.ToResponse()
+            };
+        }
+
+        public static BoardResponse ToResponse(this Life.Domain.Aggregates.Board board)
+        {
+            return new BoardResponse
+            {
+                Generation = board.Generation,
+                Dimensions = new DimensionsResponse { Width = board.Width, Height = board.Height },
+                LivingCells = board.GetLivingCells().Select(cell => new CellResponse { X = cell.X, Y = cell.Y }).ToList(),
+                GeneratedAt = DateTime.UtcNow
+            };
+        }
+
+        public static SessionSettings ToSessionSettings(this SessionSettingsRequest? request)
+        {
+            if (request == null) return SessionSettings.Default;
+
+            return new SessionSettings(
+                request.AutoSnapshotEnabled,
+                request.AutoSnapshotInterval,
+                request.MaxSnapshots,
+                request.SessionTimeoutHours,
+                request.AllowConcurrentAccess
+            );
+        }
+
+        public static Life.Domain.Aggregates.Board ToBoard(this CreateSessionRequest request)
+        {
+            var cells = request.InitialCells.Select(c => new Cell(c.X, c.Y)).ToList();
+            return Life.Domain.Aggregates.Board.Create(request.Width, request.Height, cells);
+        }
+
+        public static Life.Domain.Aggregates.Board ToBoard(this CreateFromPatternRequest request, IPatternService patternService)
+        {
+            var center = request.CenterPosition?.ToPosition() ?? new Position(request.Width / 2, request.Height / 2);
+            var pattern = patternService.GetPattern(request.Pattern);
+            return Life.Domain.Aggregates.Board.CreateFromPattern(request.Width, request.Height, pattern, center);
+        }
+
+        public static SessionStatisticsResponse ToResponse(this SessionStatistics stats)
+        {
+            return new SessionStatisticsResponse
+            {
+                TotalGenerations = stats.TotalGenerations,
+                LivingCells = stats.LivingCells,
+                DeadCells = stats.DeadCells,
+                PopulationDensity = stats.PopulationDensity,
+                BirthsThisGeneration = stats.BirthsThisGeneration,
+                DeathsThisGeneration = stats.DeathsThisGeneration,
+                TotalRuntime = stats.TotalRuntime,
+                SnapshotCount = stats.SnapshotCount,
+                LastActivity = stats.LastActivity
+            };
+        }
+
+        public static SnapshotResponse ToResponse(this SessionSnapshot snapshot)
+        {
+            return new SnapshotResponse
+            {
+                Id = snapshot.Id,
+                Name = snapshot.Name,
+                Board = snapshot.Board.ToResponse(),
+                Description = snapshot.Description,
+                CreatedAt = snapshot.CreatedAt,
+                IsAutoGenerated = snapshot.IsAutoGenerated
+            };
+        }
+
+        public static Position ToPosition(this PositionRequest? request)
+        {
+            return request != null ? new Position(request.X, request.Y) : new Position(0, 0);
+        }
+    }
+}

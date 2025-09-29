@@ -1,4 +1,5 @@
-﻿using Life.Infrastructure.Data;
+﻿using Life.Domain.Repositories;
+using Life.Infrastructure.Data;
 using Life.Infrastructure.Repositories;
 using Life.Infrastructure.Seeding;
 using Microsoft.Extensions.DependencyInjection;

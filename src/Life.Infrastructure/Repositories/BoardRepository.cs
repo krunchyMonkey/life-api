@@ -1,4 +1,5 @@
 ﻿using Life.Domain.Aggregates;
+using Life.Domain.Repositories;
 using Life.Infrastructure.Data;
 using Life.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
