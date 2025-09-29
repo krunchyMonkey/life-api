@@ -27,6 +27,7 @@ namespace Life.Infrastructure.Config
             
             // Infrastructure services only
             services.AddScoped<IBoardRepository, BoardRepository>();
+            services.AddScoped<IGameSessionRepository, GameSessionRepository>();
             services.AddScoped<DatabaseSeeder>();
             
             return services;

@@ -49,6 +49,29 @@ namespace Life.Domain.Aggregates
         
         #region Properties
         
+        /// <summary>
+        /// Factory method for reconstituting GameSession from repository data
+        /// Used by GameSessionRepository to rebuild aggregates from persistence
+        /// </summary>
+        public static GameSession Reconstitute(
+            Guid id,
+            string name,
+            BoardDimensions dimensions,
+            int currentGeneration,
+            SessionStatus status,
+            DateTime createdAt,
+            DateTime lastModified,
+            string createdBy,
+            Board? currentBoard,
+            SessionSettings settings,
+            List<SessionSnapshot> snapshots)
+        {
+            return new GameSession(
+                id, name, dimensions, currentGeneration, status,
+                createdAt, lastModified, createdBy, currentBoard,
+                settings, snapshots);
+        }
+        
         #endregion
         
         public string Name { get; private set; }
@@ -98,7 +121,7 @@ namespace Life.Domain.Aggregates
             DateTime createdAt,
             DateTime lastModified,
             string createdBy,
-            Board currentBoard,
+            Board? currentBoard,
             SessionSettings settings,
             List<SessionSnapshot> snapshots) : base(id)
         {
@@ -419,6 +442,11 @@ namespace Life.Domain.Aggregates
         /// Checks if the session is in a state that allows modifications
         /// </summary>
         public bool CanModify => Status == SessionStatus.Active;
+
+        /// <summary>
+        /// Gets the current session settings (for repository mapping)
+        /// </summary>
+        public SessionSettings GetSettings() => _settings;
 
         #endregion
 

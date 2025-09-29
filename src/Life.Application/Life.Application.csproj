@@ -18,4 +18,10 @@
     <ProjectReference Include="..\Life.Infrastructure\Life.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="GameSession\**" />
+    <EmbeddedResource Remove="GameSession\**" />
+    <None Remove="GameSession\**" />
+  </ItemGroup>
+
 </Project>
