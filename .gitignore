@@ -526,3 +526,12 @@ temp/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Local credentials and environment-specific secrets
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+appsettings.Local.json
+**/appsettings.Local.json
