@@ -410,6 +410,8 @@ git clone https://github.com/youruser/life-api.git
 cd life-api
 
 # Start all services
+# Required for local Docker development: use your own unique password
+export LIFEAPI_SQL_PASSWORD='<choose-a-strong-unique-password>'
 docker-compose -f ops/docker-compose.yml up --build
 
 # Access the application
@@ -966,6 +968,8 @@ npm run test:e2e
 
 ### Development
 ```bash
+# Required for local Docker development: use your own unique password
+export LIFEAPI_SQL_PASSWORD='<choose-a-strong-unique-password>'
 docker-compose -f ops/docker-compose.yml up --build
 ```
 
