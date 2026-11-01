@@ -4,7 +4,7 @@ services:
     container_name: life-api-sqlserver
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=LifeApi123!
+      - MSSQL_SA_PASSWORD=${LIFEAPI_SQL_PASSWORD:?Set LIFEAPI_SQL_PASSWORD before running Docker Compose}
       - MSSQL_PID=Express
     ports:
       - "1433:1433"
@@ -13,7 +13,7 @@ services:
     networks:
       - life-api-network
     healthcheck:
-      test: /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "LifeApi123!" -Q "SELECT 1" || exit 1
+      test: /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "$$MSSQL_SA_PASSWORD" -Q "SELECT 1" || exit 1
       interval: 10s
       timeout: 3s
       retries: 10
@@ -31,7 +31,7 @@ services:
       - Logging__LogLevel__Default=Debug
       - Logging__LogLevel__Microsoft.AspNetCore=Information
       - Logging__LogLevel__Life.Api=Debug
-      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=LifeApiDb;User Id=sa;Password=LifeApi123!;TrustServerCertificate=true;MultipleActiveResultSets=true;
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=LifeApiDb;User Id=sa;Password=${LIFEAPI_SQL_PASSWORD:?Set LIFEAPI_SQL_PASSWORD before running Docker Compose};TrustServerCertificate=true;MultipleActiveResultSets=true;
     depends_on:
       sqlserver:
         condition: service_healthy
