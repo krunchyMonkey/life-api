@@ -422,8 +422,11 @@ docker-compose -f ops/docker-compose.yml up --build
 
 #### Database (SQL Server)
 ```bash
+# Before running any of these commands, set a strong unique local password:
+export LIFEAPI_SQL_PASSWORD='<choose-a-strong-unique-password>'
+
 # Option A: Using Docker for SQL Server only
-docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=LifeApi123!" \
+docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=$LIFEAPI_SQL_PASSWORD" \
   -p 1433:1433 --name life-api-sqlserver \
   mcr.microsoft.com/mssql/server:2022-latest
 
@@ -431,8 +434,9 @@ docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=LifeApi123!" \
 # Ensure SQL Server is running on localhost:1433 with:
 # - Database: LifeApiDb (will be created automatically)
 # - User: sa
-# - Password: LifeApi123!
-# OR update appsettings.json with your connection string
+# - Password: set your own unique local password (never commit it)
+# Supply your complete connection string using ConnectionStrings__DefaultConnection
+# in your local environment (do not commit a password to appsettings.json).
 ```
 
 #### Backend (.NET API)
